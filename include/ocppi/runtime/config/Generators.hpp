@@ -682,7 +682,7 @@ x.memory = get_stack_optional<PurpleMemory>(j, "memory");
 x.network = get_stack_optional<ResourcesNetwork>(j, "network");
 x.pids = get_stack_optional<Pids>(j, "pids");
 x.rdma = get_stack_optional<std::map<std::string, Rdma>>(j, "rdma");
-x.unified = get_stack_optional<std::map<std::string, nlohmann::json>>(j, "unified");
+x.unified = get_stack_optional<std::map<std::string, std::string>>(j, "unified");
 }
 
 inline void to_json(json & j, const LinuxResources & x) {
@@ -828,7 +828,7 @@ x.readonlyPaths = get_stack_optional<std::vector<std::string>>(j, "readonlyPaths
 x.resources = get_stack_optional<LinuxResources>(j, "resources");
 x.rootfsPropagation = get_stack_optional<RootfsPropagation>(j, "rootfsPropagation");
 x.seccomp = get_stack_optional<Seccomp>(j, "seccomp");
-x.sysctl = get_stack_optional<std::map<std::string, nlohmann::json>>(j, "sysctl");
+x.sysctl = get_stack_optional<std::map<std::string, std::string>>(j, "sysctl");
 x.timeOffsets = get_stack_optional<TimeOffsets>(j, "timeOffsets");
 x.uidMappings = get_stack_optional<std::vector<IdMapping>>(j, "uidMappings");
 }

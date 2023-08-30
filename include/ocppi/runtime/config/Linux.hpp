@@ -59,7 +59,7 @@ std::optional<std::vector<std::string>> readonlyPaths;
 std::optional<LinuxResources> resources;
 std::optional<RootfsPropagation> rootfsPropagation;
 std::optional<Seccomp> seccomp;
-std::optional<std::map<std::string, nlohmann::json>> sysctl;
+std::optional<std::map<std::string, std::string>> sysctl;
 std::optional<TimeOffsets> timeOffsets;
 std::optional<std::vector<IdMapping>> uidMappings;
 };

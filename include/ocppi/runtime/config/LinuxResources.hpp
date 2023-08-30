@@ -47,7 +47,7 @@ std::optional<PurpleMemory> memory;
 std::optional<ResourcesNetwork> network;
 std::optional<Pids> pids;
 std::optional<std::map<std::string, Rdma>> rdma;
-std::optional<std::map<std::string, nlohmann::json>> unified;
+std::optional<std::map<std::string, std::string>> unified;
 };
 }
 }
