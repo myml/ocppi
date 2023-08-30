@@ -1,0 +1,45 @@
+diff -ruN include.orig/ocppi/runtime/config/Generators.hpp include/ocppi/runtime/config/Generators.hpp
+--- include.orig/ocppi/runtime/config/Generators.hpp	2023-08-30 15:13:21.493330983 +0800
++++ include/ocppi/runtime/config/Generators.hpp	2023-08-30 15:13:30.141384152 +0800
+@@ -682,7 +682,7 @@
+ x.network = get_stack_optional<ResourcesNetwork>(j, "network");
+ x.pids = get_stack_optional<Pids>(j, "pids");
+ x.rdma = get_stack_optional<std::map<std::string, Rdma>>(j, "rdma");
+-x.unified = get_stack_optional<std::map<std::string, nlohmann::json>>(j, "unified");
++x.unified = get_stack_optional<std::map<std::string, std::string>>(j, "unified");
+ }
+ 
+ inline void to_json(json & j, const LinuxResources & x) {
+@@ -828,7 +828,7 @@
+ x.resources = get_stack_optional<LinuxResources>(j, "resources");
+ x.rootfsPropagation = get_stack_optional<RootfsPropagation>(j, "rootfsPropagation");
+ x.seccomp = get_stack_optional<Seccomp>(j, "seccomp");
+-x.sysctl = get_stack_optional<std::map<std::string, nlohmann::json>>(j, "sysctl");
++x.sysctl = get_stack_optional<std::map<std::string, std::string>>(j, "sysctl");
+ x.timeOffsets = get_stack_optional<TimeOffsets>(j, "timeOffsets");
+ x.uidMappings = get_stack_optional<std::vector<IdMapping>>(j, "uidMappings");
+ }
+diff -ruN include.orig/ocppi/runtime/config/Linux.hpp include/ocppi/runtime/config/Linux.hpp
+--- include.orig/ocppi/runtime/config/Linux.hpp	2023-08-30 15:13:21.493330983 +0800
++++ include/ocppi/runtime/config/Linux.hpp	2023-08-30 15:13:30.141384152 +0800
+@@ -59,7 +59,7 @@
+ std::optional<LinuxResources> resources;
+ std::optional<RootfsPropagation> rootfsPropagation;
+ std::optional<Seccomp> seccomp;
+-std::optional<std::map<std::string, nlohmann::json>> sysctl;
++std::optional<std::map<std::string, std::string>> sysctl;
+ std::optional<TimeOffsets> timeOffsets;
+ std::optional<std::vector<IdMapping>> uidMappings;
+ };
+diff -ruN include.orig/ocppi/runtime/config/LinuxResources.hpp include/ocppi/runtime/config/LinuxResources.hpp
+--- include.orig/ocppi/runtime/config/LinuxResources.hpp	2023-08-30 15:13:21.493330983 +0800
++++ include/ocppi/runtime/config/LinuxResources.hpp	2023-08-30 15:13:30.141384152 +0800
+@@ -47,7 +47,7 @@
+ std::optional<ResourcesNetwork> network;
+ std::optional<Pids> pids;
+ std::optional<std::map<std::string, Rdma>> rdma;
+-std::optional<std::map<std::string, nlohmann::json>> unified;
++std::optional<std::map<std::string, std::string>> unified;
+ };
+ }
+ }
