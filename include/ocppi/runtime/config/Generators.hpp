@@ -1460,7 +1460,7 @@ x.annotations = get_stack_optional<std::map<std::string, nlohmann::json>>(j, "an
 x.domainname = get_stack_optional<std::string>(j, "domainname");
 x.hooks = get_stack_optional<Hooks>(j, "hooks");
 x.hostname = get_stack_optional<std::string>(j, "hostname");
-x.linux = get_stack_optional<Linux>(j, "linux");
+x.linux_ = get_stack_optional<Linux>(j, "linux");
 x.mounts = get_stack_optional<std::vector<Mount>>(j, "mounts");
 x.ociVersion = j.at("ociVersion").get<std::string>();
 x.process = get_stack_optional<Process>(j, "process");
@@ -1485,8 +1485,8 @@ j["hooks"] = x.hooks;
 if (x.hostname) {
 j["hostname"] = x.hostname;
 }
-if (x.linux) {
-j["linux"] = x.linux;
+if (x.linux_) {
+j["linux"] = x.linux_;
 }
 if (x.mounts) {
 j["mounts"] = x.mounts;

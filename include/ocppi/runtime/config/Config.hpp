@@ -51,7 +51,7 @@ std::optional<std::map<std::string, nlohmann::json>> annotations;
 std::optional<std::string> domainname;
 std::optional<Hooks> hooks;
 std::optional<std::string> hostname;
-std::optional<Linux> linux;
+std::optional<Linux> linux_;
 std::optional<std::vector<Mount>> mounts;
 std::string ociVersion;
 std::optional<Process> process;

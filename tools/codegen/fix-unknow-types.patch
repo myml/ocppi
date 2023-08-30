@@ -1,6 +1,18 @@
+diff -ruN include.orig/ocppi/runtime/config/Config.hpp include/ocppi/runtime/config/Config.hpp
+--- include.orig/ocppi/runtime/config/Config.hpp	2023-08-30 15:48:13.944641805 +0800
++++ include/ocppi/runtime/config/Config.hpp	2023-08-30 15:49:22.984481686 +0800
+@@ -51,7 +51,7 @@
+ std::optional<std::string> domainname;
+ std::optional<Hooks> hooks;
+ std::optional<std::string> hostname;
+-std::optional<Linux> linux;
++std::optional<Linux> linux_;
+ std::optional<std::vector<Mount>> mounts;
+ std::string ociVersion;
+ std::optional<Process> process;
 diff -ruN include.orig/ocppi/runtime/config/Generators.hpp include/ocppi/runtime/config/Generators.hpp
---- include.orig/ocppi/runtime/config/Generators.hpp	2023-08-30 15:13:21.493330983 +0800
-+++ include/ocppi/runtime/config/Generators.hpp	2023-08-30 15:13:30.141384152 +0800
+--- include.orig/ocppi/runtime/config/Generators.hpp	2023-08-30 15:48:13.948642039 +0800
++++ include/ocppi/runtime/config/Generators.hpp	2023-08-30 15:50:02.138502747 +0800
 @@ -682,7 +682,7 @@
  x.network = get_stack_optional<ResourcesNetwork>(j, "network");
  x.pids = get_stack_optional<Pids>(j, "pids");
@@ -19,9 +31,29 @@ diff -ruN include.orig/ocppi/runtime/config/Generators.hpp include/ocppi/runtime
  x.timeOffsets = get_stack_optional<TimeOffsets>(j, "timeOffsets");
  x.uidMappings = get_stack_optional<std::vector<IdMapping>>(j, "uidMappings");
  }
+@@ -1460,7 +1460,7 @@
+ x.domainname = get_stack_optional<std::string>(j, "domainname");
+ x.hooks = get_stack_optional<Hooks>(j, "hooks");
+ x.hostname = get_stack_optional<std::string>(j, "hostname");
+-x.linux = get_stack_optional<Linux>(j, "linux");
++x.linux_ = get_stack_optional<Linux>(j, "linux");
+ x.mounts = get_stack_optional<std::vector<Mount>>(j, "mounts");
+ x.ociVersion = j.at("ociVersion").get<std::string>();
+ x.process = get_stack_optional<Process>(j, "process");
+@@ -1485,8 +1485,8 @@
+ if (x.hostname) {
+ j["hostname"] = x.hostname;
+ }
+-if (x.linux) {
+-j["linux"] = x.linux;
++if (x.linux_) {
++j["linux"] = x.linux_;
+ }
+ if (x.mounts) {
+ j["mounts"] = x.mounts;
 diff -ruN include.orig/ocppi/runtime/config/Linux.hpp include/ocppi/runtime/config/Linux.hpp
---- include.orig/ocppi/runtime/config/Linux.hpp	2023-08-30 15:13:21.493330983 +0800
-+++ include/ocppi/runtime/config/Linux.hpp	2023-08-30 15:13:30.141384152 +0800
+--- include.orig/ocppi/runtime/config/Linux.hpp	2023-08-30 15:48:13.948642039 +0800
++++ include/ocppi/runtime/config/Linux.hpp	2023-08-30 15:48:18.820925378 +0800
 @@ -59,7 +59,7 @@
  std::optional<LinuxResources> resources;
  std::optional<RootfsPropagation> rootfsPropagation;
@@ -32,8 +64,8 @@ diff -ruN include.orig/ocppi/runtime/config/Linux.hpp include/ocppi/runtime/conf
  std::optional<std::vector<IdMapping>> uidMappings;
  };
 diff -ruN include.orig/ocppi/runtime/config/LinuxResources.hpp include/ocppi/runtime/config/LinuxResources.hpp
---- include.orig/ocppi/runtime/config/LinuxResources.hpp	2023-08-30 15:13:21.493330983 +0800
-+++ include/ocppi/runtime/config/LinuxResources.hpp	2023-08-30 15:13:30.141384152 +0800
+--- include.orig/ocppi/runtime/config/LinuxResources.hpp	2023-08-30 15:48:13.948642039 +0800
++++ include/ocppi/runtime/config/LinuxResources.hpp	2023-08-30 15:48:18.824925610 +0800
 @@ -47,7 +47,7 @@
  std::optional<ResourcesNetwork> network;
  std::optional<Pids> pids;
