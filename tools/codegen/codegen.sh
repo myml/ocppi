@@ -72,7 +72,7 @@ generate() {
 GIT=${GIT:="git"}
 
 repoRoot="$("$GIT" rev-parse --show-toplevel)"
-cd "$repoRoot"/tools/codegen || exit 255
+cd "$repoRoot"/tools/codegen
 
 npm install .
 
@@ -93,3 +93,14 @@ generate \
 	Features \
 	"ocppi::runtime::features" \
 	"ocppi/runtime/features"
+
+PATCH_FILE=${PATCH_FILE:="$repoRoot"/tools/codegen/fix-unknow-types.patch}
+
+if [[ ! -f "$PATCH_FILE" ]]; then
+	exit
+fi
+
+cd "$repoRoot"
+cp -r "$repoRoot/include" "$repoRoot/include.orig"
+patch -s -p0 <"$PATCH_FILE"
+rm -r "$repoRoot/include.orig"
