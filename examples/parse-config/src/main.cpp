@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include <ocppi/runtime/config/Config.hpp>
-#include <ocppi/runtime/config/Generators.hpp>
+#include <ocppi/runtime/config/types/Config.hpp>
+#include <ocppi/runtime/config/types/Generators.hpp>
 
 int main()
 {
@@ -397,8 +397,8 @@ int main()
     }
 })");
 
-        ocppi::runtime::config::Config cfg =
-                j.get<ocppi::runtime::config::Config>();
+        ocppi::runtime::config::types::Config cfg =
+                j.get<ocppi::runtime::config::types::Config>();
 
         std::cout << cfg.ociVersion << std::endl;
         std::cout << nlohmann::json(cfg) << std::endl;

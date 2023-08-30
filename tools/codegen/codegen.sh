@@ -79,20 +79,20 @@ npm install .
 generate \
 	"$repoRoot/runtime-spec/schema/config-schema.json" \
 	Config \
-	"ocppi::runtime::config" \
-	"ocppi/runtime/config"
+	"ocppi::runtime::config::types" \
+	"ocppi/runtime/config/types"
 
 generate \
 	"$repoRoot/runtime-spec/schema/state-schema.json" \
 	State \
-	"ocppi::runtime::state" \
-	"ocppi/runtime/state"
+	"ocppi::runtime::state::types" \
+	"ocppi/runtime/state/types"
 
 generate \
 	"$repoRoot/runtime-spec/schema/features-schema.json" \
 	Features \
-	"ocppi::runtime::features" \
-	"ocppi/runtime/features"
+	"ocppi::runtime::features::types" \
+	"ocppi/runtime/features/types"
 
 PATCH_FILE=${PATCH_FILE:="$repoRoot"/tools/codegen/fix-unknow-types.patch}
 
