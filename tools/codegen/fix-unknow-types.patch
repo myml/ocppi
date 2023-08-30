@@ -1,6 +1,6 @@
 diff -ruN include.orig/ocppi/runtime/config/types/Config.hpp include/ocppi/runtime/config/types/Config.hpp
---- include.orig/ocppi/runtime/config/types/Config.hpp	2023-08-30 16:57:03.490645126 +0800
-+++ include/ocppi/runtime/config/types/Config.hpp	2023-08-30 16:57:06.030632249 +0800
+--- include.orig/ocppi/runtime/config/types/Config.hpp	2023-08-30 17:17:32.841351100 +0800
++++ include/ocppi/runtime/config/types/Config.hpp	2023-08-30 17:17:45.057477774 +0800
 @@ -54,7 +54,7 @@
  std::optional<std::string> domainname;
  std::optional<Hooks> hooks;
@@ -11,8 +11,8 @@ diff -ruN include.orig/ocppi/runtime/config/types/Config.hpp include/ocppi/runti
  std::string ociVersion;
  std::optional<Process> process;
 diff -ruN include.orig/ocppi/runtime/config/types/Generators.hpp include/ocppi/runtime/config/types/Generators.hpp
---- include.orig/ocppi/runtime/config/types/Generators.hpp	2023-08-30 16:57:03.490645126 +0800
-+++ include/ocppi/runtime/config/types/Generators.hpp	2023-08-30 16:57:06.434630224 +0800
+--- include.orig/ocppi/runtime/config/types/Generators.hpp	2023-08-30 17:17:32.841351100 +0800
++++ include/ocppi/runtime/config/types/Generators.hpp	2023-08-30 17:17:45.065477857 +0800
 @@ -683,7 +683,7 @@
  x.network = get_stack_optional<ResourcesNetwork>(j, "network");
  x.pids = get_stack_optional<Pids>(j, "pids");
@@ -52,8 +52,8 @@ diff -ruN include.orig/ocppi/runtime/config/types/Generators.hpp include/ocppi/r
  if (x.mounts) {
  j["mounts"] = x.mounts;
 diff -ruN include.orig/ocppi/runtime/config/types/Linux.hpp include/ocppi/runtime/config/types/Linux.hpp
---- include.orig/ocppi/runtime/config/types/Linux.hpp	2023-08-30 16:57:03.490645126 +0800
-+++ include/ocppi/runtime/config/types/Linux.hpp	2023-08-30 16:57:06.762628581 +0800
+--- include.orig/ocppi/runtime/config/types/Linux.hpp	2023-08-30 17:17:32.841351100 +0800
++++ include/ocppi/runtime/config/types/Linux.hpp	2023-08-30 17:17:45.065477857 +0800
 @@ -62,7 +62,7 @@
  std::optional<LinuxResources> resources;
  std::optional<RootfsPropagation> rootfsPropagation;
@@ -64,8 +64,8 @@ diff -ruN include.orig/ocppi/runtime/config/types/Linux.hpp include/ocppi/runtim
  std::optional<std::vector<IdMapping>> uidMappings;
  };
 diff -ruN include.orig/ocppi/runtime/config/types/LinuxResources.hpp include/ocppi/runtime/config/types/LinuxResources.hpp
---- include.orig/ocppi/runtime/config/types/LinuxResources.hpp	2023-08-30 16:57:03.490645126 +0800
-+++ include/ocppi/runtime/config/types/LinuxResources.hpp	2023-08-30 16:57:07.186626463 +0800
+--- include.orig/ocppi/runtime/config/types/LinuxResources.hpp	2023-08-30 17:17:32.841351100 +0800
++++ include/ocppi/runtime/config/types/LinuxResources.hpp	2023-08-30 17:17:45.069477898 +0800
 @@ -50,7 +50,7 @@
  std::optional<ResourcesNetwork> network;
  std::optional<Pids> pids;
@@ -75,3 +75,38 @@ diff -ruN include.orig/ocppi/runtime/config/types/LinuxResources.hpp include/ocp
  };
  }
  }
+diff -ruN include.orig/ocppi/runtime/features/types/Features.hpp include/ocppi/runtime/features/types/Features.hpp
+--- include.orig/ocppi/runtime/features/types/Features.hpp	2023-08-30 17:17:32.841351100 +0800
++++ include/ocppi/runtime/features/types/Features.hpp	2023-08-30 17:17:45.073477940 +0800
+@@ -35,7 +35,7 @@
+ struct Features {
+ std::optional<std::map<std::string, nlohmann::json>> annotations;
+ std::optional<std::vector<std::string>> hooks;
+-std::optional<Linux> linux;
++std::optional<Linux> linux_;
+ std::optional<std::vector<std::string>> mountOptions;
+ std::string ociVersionMax;
+ std::string ociVersionMin;
+diff -ruN include.orig/ocppi/runtime/features/types/Generators.hpp include/ocppi/runtime/features/types/Generators.hpp
+--- include.orig/ocppi/runtime/features/types/Generators.hpp	2023-08-30 17:17:32.841351100 +0800
++++ include/ocppi/runtime/features/types/Generators.hpp	2023-08-30 17:17:45.077477981 +0800
+@@ -199,7 +199,7 @@
+ inline void from_json(const json & j, Features& x) {
+ x.annotations = get_stack_optional<std::map<std::string, nlohmann::json>>(j, "annotations");
+ x.hooks = get_stack_optional<std::vector<std::string>>(j, "hooks");
+-x.linux = get_stack_optional<Linux>(j, "linux");
++x.linux_ = get_stack_optional<Linux>(j, "linux");
+ x.mountOptions = get_stack_optional<std::vector<std::string>>(j, "mountOptions");
+ x.ociVersionMax = j.at("ociVersionMax").get<std::string>();
+ x.ociVersionMin = j.at("ociVersionMin").get<std::string>();
+@@ -213,8 +213,8 @@
+ if (x.hooks) {
+ j["hooks"] = x.hooks;
+ }
+-if (x.linux) {
+-j["linux"] = x.linux;
++if (x.linux_) {
++j["linux"] = x.linux_;
+ }
+ if (x.mountOptions) {
+ j["mountOptions"] = x.mountOptions;

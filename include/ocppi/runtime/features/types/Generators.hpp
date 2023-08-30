@@ -199,7 +199,7 @@ j["selinux"] = x.selinux;
 inline void from_json(const json & j, Features& x) {
 x.annotations = get_stack_optional<std::map<std::string, nlohmann::json>>(j, "annotations");
 x.hooks = get_stack_optional<std::vector<std::string>>(j, "hooks");
-x.linux = get_stack_optional<Linux>(j, "linux");
+x.linux_ = get_stack_optional<Linux>(j, "linux");
 x.mountOptions = get_stack_optional<std::vector<std::string>>(j, "mountOptions");
 x.ociVersionMax = j.at("ociVersionMax").get<std::string>();
 x.ociVersionMin = j.at("ociVersionMin").get<std::string>();
@@ -213,8 +213,8 @@ j["annotations"] = x.annotations;
 if (x.hooks) {
 j["hooks"] = x.hooks;
 }
-if (x.linux) {
-j["linux"] = x.linux;
+if (x.linux_) {
+j["linux"] = x.linux_;
 }
 if (x.mountOptions) {
 j["mountOptions"] = x.mountOptions;

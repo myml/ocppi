@@ -35,7 +35,7 @@ using nlohmann::json;
 struct Features {
 std::optional<std::map<std::string, nlohmann::json>> annotations;
 std::optional<std::vector<std::string>> hooks;
-std::optional<Linux> linux;
+std::optional<Linux> linux_;
 std::optional<std::vector<std::string>> mountOptions;
 std::string ociVersionMax;
 std::string ociVersionMin;
