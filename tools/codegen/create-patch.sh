@@ -8,12 +8,15 @@ GIT=${GIT:="git"}
 repoRoot="$("$GIT" rev-parse --show-toplevel)"
 cd "$repoRoot"/tools/codegen || exit 255
 
-[ -f "$repoRoot/include.orig" ] && chmod -R u+w "$repoRoot/include.orig"
-rm -rf "$repoRoot"/include.orig/
+include="$repoRoot/libs/runtime/include"
+origin="$include.orig"
 
-cp -r "$repoRoot"/include/ "$repoRoot"/include.orig/
+[ -f "$origin" ] && chmod -R u+w "$origin"
+rm -rf "$origin"
 
-chmod -R u-w "$repoRoot/include.orig"
+cp -r "$include" "$origin"
+
+chmod -R u-w "$origin"
 
 USER_SHELL=${USER_SHELL:="$(getent passwd | awk -F: -v user="$USER" '$1 == user {print $NF}')"}
 
@@ -23,7 +26,8 @@ cd "$repoRoot"
 
 "$USER_SHELL"
 
-! diff -ruN "include.orig/" "include/" >"$repoRoot"/tools/codegen/fix-unknow-types.patch
+! diff -ruN "${origin#"$repoRoot/"}" "${include#"$repoRoot/"}" \
+	>"$repoRoot"/tools/codegen/fix-unknow-types.patch
 
-chmod -R u+w "$repoRoot/include.orig"
-rm -rf "$repoRoot"/include.orig/
+chmod -R u+w "$origin"
+rm -rf "$origin"
