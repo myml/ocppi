@@ -1,6 +1,7 @@
 cmake_minimum_required (
         VERSION
-                3.23)
+                3.23
+)
 
 project (
         ocppi
@@ -20,7 +21,12 @@ option (
         ${PROJECT_IS_TOP_LEVEL}
 )
 
-include (./cmake/external/CPM.cmake)
+option (
+        OCPPI_BUILD_SHARED_LIBRARY "Build a shared library or not"
+        ${PROJECT_IS_TOP_LEVEL}
+)
+
+include (./cmake/CPM.cmake)
 
 message (
         STATUS
@@ -30,7 +36,7 @@ message (
 CPMFindPackage (
         NAME expected
         VERSION
-                1.1.0
+                1.0.0
         GITHUB_REPOSITORY
                 TartanLlama/expected
         GIT_TAG
@@ -39,6 +45,10 @@ CPMFindPackage (
                 ON
         OPTIONS
                 "EXPECTED_BUILD_TESTS OFF"
+        FIND_PACKAGE_ARGUMENTS
+                "NAMES tl-expected"
+        EXCLUDE_FROM_ALL
+                ON
 )
 
 CPMFindPackage (
@@ -50,6 +60,8 @@ CPMFindPackage (
         GIT_TAG
                 v0.3.0
         GIT_SHALLOW
+                ON
+        EXCLUDE_FROM_ALL
                 ON
 )
 
@@ -63,6 +75,8 @@ CPMFindPackage (
                 v3.11.2
         GIT_SHALLOW
                 ON
+        EXCLUDE_FROM_ALL
+                ON
 )
 
 CPMFindPackage (
@@ -74,6 +88,8 @@ CPMFindPackage (
         GIT_TAG
                 v2.13.10
         GIT_SHALLOW
+                ON
+        EXCLUDE_FROM_ALL
                 ON
 )
 
@@ -87,25 +103,42 @@ CPMFindPackage (
                 "boost-1.74.0"
         GIT_SHALLOW
                 ON
+        EXCLUDE_FROM_ALL
+                ON
+)
+
+CPMFindPackage (
+        NAME spdlog
+        VERSION
+                1.10.0
+        GITHUB_REPOSITORY
+                "gabime/spdlog"
+        GIT_TAG
+                "v1.10.0"
+        GIT_SHALLOW
+                ON
+        EXCLUDE_FROM_ALL
+                ON
 )
 
 include (./cmake/GitSemver.cmake)
 
 set (OCPPI_SEMVER ${PROJECT_VERSION})
-ocppi_get_semver_from_git (OCPPI_SEMVER)
+gitsemver (OCPPI_SEMVER)
 
 set (OCPPI_OCI_RUNTIME_SPEC_MIN "1.0.0")
 set (OCPPI_OCI_RUNTIME_SPEC_MAX "1.1.0")
+set (OCPPI_LIBRARY_TYPE "STATIC")
+if(OCPPI_BUILD_SHARED_LIBRARY)
+        set (OCPPI_LIBRARY_TYPE "SHARED")
+endif()
+set (OCPPI_SOVERSION 1)
+
+set (CMAKE_CXX_FLAGS_DEBUG "-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE")
 
 include (./cmake/PFL.cmake)
 
-set (
-        OCPPI_LIBS
-        common
-        utils
-        runtime
-        cli
-)
+set (OCPPI_LIBS common runtime cli)
 
 set (PFL_ENABLE_TESTING ${OCPPI_ENABLE_TESTING})
 set (PFL_BUILD_EXAMPLES ${OCPPI_BUILD_EXAMPLES})

@@ -1,16 +1,21 @@
 pfl_add_library (
+        NO_INSTALL # cli is not ready for publish
+        SOVERSION
+        ${OCPPI_SOVERSION}
+        VERSION
+        ${PROJECT_VERSION}
+        TYPE
+        ${OCPPI_LIBRARY_TYPE}
         HEADERS
         include/ocppi/cli/CLI.hpp
+        include/ocppi/cli/CommandFailedError.hpp
         include/ocppi/cli/crun/Crun.hpp
         include/ocppi/cli/runc/Runc.hpp
         include/ocppi/cli/youki/Youki.hpp
         SOURCES
         src/ocppi/cli/CLI.cpp
+        src/ocppi/cli/CommandFailedError.cpp
         src/ocppi/cli/crun/Crun.cpp
-        src/ocppi/cli/crun/CrunImpl.hpp
-        src/ocppi/cli/crun/CrunImpl.cpp
-        src/ocppi/cli/crun/deserialize.cpp
-        src/ocppi/cli/crun/deserialize.hpp
         src/ocppi/cli/runc/Runc.cpp
         src/ocppi/cli/youki/Youki.cpp
         EXAMPLES
@@ -22,7 +27,7 @@ pfl_add_library (
         PUBLIC
         ocppi::runtime
         tl::expected
+        spdlog::spdlog
         PRIVATE
-        ocppi::utils
         Boost::headers
 )

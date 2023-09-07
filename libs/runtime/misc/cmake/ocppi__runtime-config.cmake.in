@@ -1,0 +1,11 @@
+@PACKAGE_INIT@
+
+list (APPEND CMAKE_MODULE_PATH "@PACKAGE_cmakeModulesDir@")
+
+include (CMakeFindDependencyMacro)
+
+find_dependency (ocppi__common @PROJECT_VERSION@)
+find_dependency (nlohmann_json 3.11.2)
+find_dependency (tl-expected 1.0.0)
+
+include (${CMAKE_CURRENT_LIST_DIR}/ocppi__runtime.cmake)

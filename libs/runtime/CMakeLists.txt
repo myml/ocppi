@@ -1,8 +1,14 @@
 pfl_add_library (
+        SOVERSION
+        ${OCPPI_SOVERSION}
+        VERSION
+        ${PROJECT_VERSION}
+        TYPE
+        ${OCPPI_LIBRARY_TYPE}
         INS
         include/ocppi/runtime/configure.hpp.in
         SOURCES
-        src/ocppi/runtime/config/load.cpp
+        src/ocppi/runtime/config/ConfigLoader.cpp
         src/ocppi/runtime/ContainerID.cpp
         src/ocppi/runtime/CreateOption.cpp
         src/ocppi/runtime/DeleteOption.cpp
@@ -86,7 +92,7 @@ pfl_add_library (
         include/ocppi/runtime/config/WrongTypeError.hpp
         include/ocppi/runtime/config/IncompatibleVersionError.hpp
         include/ocppi/runtime/config/InvalidConfigError.hpp
-        include/ocppi/runtime/config/load.hpp
+        include/ocppi/runtime/config/ConfigLoader.hpp
         include/ocppi/runtime/features/types/helper.hpp
         include/ocppi/runtime/features/types/Apparmor.hpp
         include/ocppi/runtime/features/types/Cgroup.hpp
@@ -122,6 +128,5 @@ pfl_add_library (
         tl::expected
         ocppi::common
         PRIVATE
-        ocppi::utils
         semver
 )

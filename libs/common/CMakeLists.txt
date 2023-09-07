@@ -1,4 +1,7 @@
 pfl_add_library (
+        HEADER_ONLY
+        VERSION
+        ${PROJECT_VERSION}
         INS
         include/ocppi/common/configure.hpp.in
         SOURCES
@@ -7,9 +10,9 @@ pfl_add_library (
         HEADERS
         include/ocppi/common/InvalidArgumentError.hpp
         COMPILE_FEATURES
-        PUBLIC
+        INTERFACE
         cxx_std_17
         LINK_LIBRARIES
-        PUBLIC
+        INTERFACE
         tl::expected
 )
