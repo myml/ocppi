@@ -1,6 +1,7 @@
 #pragma once
 
-#include <stdexcept>
+#include <stdexcept> // for invalid_argument
+#include <string>    // for operator+, string
 
 namespace ocppi::common
 {

@@ -18,8 +18,8 @@ pfl_add_library (
         src/ocppi/runtime/KillOption.cpp
         src/ocppi/runtime/Runtime.cpp
         src/ocppi/runtime/configure.cpp
-        src/ocppi/runtime/semver.hpp
-        src/ocppi/runtime/semver.cpp
+        src/ocppi/runtime/semver_range.hpp
+        src/ocppi/runtime/semver_range.cpp
         HEADERS
         include/ocppi/runtime/config/types/helper.hpp
         include/ocppi/runtime/config/types/Anet.hpp
