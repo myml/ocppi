@@ -10,7 +10,9 @@ IWYU_TOOL=${IWYU_TOOL:=$({
 	echo iwyu-tool
 })}
 
-"$IWYU_TOOL" -p build | tee build/iwyu.out
+cmake -B build-iwyu -DCMAKE_EXPORT_COMPILE_COMMANDS=YES -DCMAKE_CXX_COMPILER=/usr/bin/clang++
+
+"$IWYU_TOOL" -p build-iwyu | tee build/iwyu.out
 
 IWYU_FIX_INCLUDES=${IWYU_FIX_INCLUDES:=$({
 	command -v fix_include &>/dev/null && echo "fix_include" && exit
