@@ -17,7 +17,10 @@
 #include <nlohmann/json.hpp>
 #include "ocppi/runtime/config/types/helper.hpp"
 
+#include "ocppi/runtime/config/types/LinuxDevice.hpp"
+#include "ocppi/runtime/config/types/IdMapping.hpp"
 #include "ocppi/runtime/config/types/IntelRdt.hpp"
+#include "ocppi/runtime/config/types/NamespaceReference.hpp"
 #include "ocppi/runtime/config/types/Personality.hpp"
 #include "ocppi/runtime/config/types/LinuxResources.hpp"
 #include "ocppi/runtime/config/types/Seccomp.hpp"
@@ -27,9 +30,6 @@ namespace ocppi {
 namespace runtime {
 namespace config {
 namespace types {
-struct LinuxDevice;
-struct IdMapping;
-struct NamespaceReference;
 enum class RootfsPropagation : int;
 }
 }

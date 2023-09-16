@@ -17,16 +17,8 @@
 #include <nlohmann/json.hpp>
 #include "ocppi/runtime/config/types/helper.hpp"
 
-namespace ocppi {
-namespace runtime {
-namespace config {
-namespace types {
-struct BlockIODeviceThrottle;
-struct BlockIODeviceWeight;
-}
-}
-}
-}
+#include "ocppi/runtime/config/types/BlockIODeviceThrottle.hpp"
+#include "ocppi/runtime/config/types/BlockIODeviceWeight.hpp"
 
 namespace ocppi {
 namespace runtime {

@@ -19,21 +19,12 @@
 
 #include "ocppi/runtime/config/types/BlockIO.hpp"
 #include "ocppi/runtime/config/types/PurpleCPU.hpp"
+#include "ocppi/runtime/config/types/DeviceCgroup.hpp"
+#include "ocppi/runtime/config/types/HugepageLimit.hpp"
 #include "ocppi/runtime/config/types/PurpleMemory.hpp"
 #include "ocppi/runtime/config/types/ResourcesNetwork.hpp"
 #include "ocppi/runtime/config/types/Pids.hpp"
-
-namespace ocppi {
-namespace runtime {
-namespace config {
-namespace types {
-struct DeviceCgroup;
-struct HugepageLimit;
-struct Rdma;
-}
-}
-}
-}
+#include "ocppi/runtime/config/types/Rdma.hpp"
 
 namespace ocppi {
 namespace runtime {

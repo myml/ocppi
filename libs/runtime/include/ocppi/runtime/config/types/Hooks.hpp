@@ -17,15 +17,7 @@
 #include <nlohmann/json.hpp>
 #include "ocppi/runtime/config/types/helper.hpp"
 
-namespace ocppi {
-namespace runtime {
-namespace config {
-namespace types {
-struct Hook;
-}
-}
-}
-}
+#include "ocppi/runtime/config/types/Hook.hpp"
 
 namespace ocppi {
 namespace runtime {

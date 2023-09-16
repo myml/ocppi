@@ -19,22 +19,13 @@
 
 #include "ocppi/runtime/config/types/Hooks.hpp"
 #include "ocppi/runtime/config/types/Linux.hpp"
+#include "ocppi/runtime/config/types/Mount.hpp"
 #include "ocppi/runtime/config/types/Process.hpp"
 #include "ocppi/runtime/config/types/Root.hpp"
 #include "ocppi/runtime/config/types/Solaris.hpp"
 #include "ocppi/runtime/config/types/Vm.hpp"
 #include "ocppi/runtime/config/types/Windows.hpp"
 #include "ocppi/runtime/config/types/Zos.hpp"
-
-namespace ocppi {
-namespace runtime {
-namespace config {
-namespace types {
-struct Mount;
-}
-}
-}
-}
 
 namespace ocppi {
 namespace runtime {

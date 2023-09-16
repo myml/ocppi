@@ -17,19 +17,10 @@
 #include <nlohmann/json.hpp>
 #include "ocppi/runtime/config/types/helper.hpp"
 
+#include "ocppi/runtime/config/types/WindowsDevice.hpp"
 #include "ocppi/runtime/config/types/Hyperv.hpp"
 #include "ocppi/runtime/config/types/WindowsNetwork.hpp"
 #include "ocppi/runtime/config/types/WindowsResources.hpp"
-
-namespace ocppi {
-namespace runtime {
-namespace config {
-namespace types {
-struct WindowsDevice;
-}
-}
-}
-}
 
 namespace ocppi {
 namespace runtime {

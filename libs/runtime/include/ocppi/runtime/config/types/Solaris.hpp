@@ -17,18 +17,9 @@
 #include <nlohmann/json.hpp>
 #include "ocppi/runtime/config/types/helper.hpp"
 
+#include "ocppi/runtime/config/types/Anet.hpp"
 #include "ocppi/runtime/config/types/CappedCPU.hpp"
 #include "ocppi/runtime/config/types/CappedMemory.hpp"
-
-namespace ocppi {
-namespace runtime {
-namespace config {
-namespace types {
-struct Anet;
-}
-}
-}
-}
 
 namespace ocppi {
 namespace runtime {

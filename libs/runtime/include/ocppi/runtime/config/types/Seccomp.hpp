@@ -17,6 +17,8 @@
 #include <nlohmann/json.hpp>
 #include "ocppi/runtime/config/types/helper.hpp"
 
+#include "ocppi/runtime/config/types/Syscall.hpp"
+
 namespace ocppi {
 namespace runtime {
 namespace config {
@@ -24,7 +26,6 @@ namespace types {
 enum class SeccompArch : int;
 enum class SeccompAction : int;
 enum class SeccompFlag : int;
-struct Syscall;
 }
 }
 }

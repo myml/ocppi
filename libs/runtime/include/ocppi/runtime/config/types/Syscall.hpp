@@ -17,12 +17,13 @@
 #include <nlohmann/json.hpp>
 #include "ocppi/runtime/config/types/helper.hpp"
 
+#include "ocppi/runtime/config/types/SyscallArg.hpp"
+
 namespace ocppi {
 namespace runtime {
 namespace config {
 namespace types {
 enum class SeccompAction : int;
-struct SyscallArg;
 }
 }
 }

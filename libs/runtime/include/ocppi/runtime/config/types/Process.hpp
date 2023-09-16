@@ -20,18 +20,9 @@
 #include "ocppi/runtime/config/types/Capabilities.hpp"
 #include "ocppi/runtime/config/types/ConsoleSize.hpp"
 #include "ocppi/runtime/config/types/IoPriority.hpp"
+#include "ocppi/runtime/config/types/Rlimit.hpp"
 #include "ocppi/runtime/config/types/Scheduler.hpp"
 #include "ocppi/runtime/config/types/User.hpp"
-
-namespace ocppi {
-namespace runtime {
-namespace config {
-namespace types {
-struct Rlimit;
-}
-}
-}
-}
 
 namespace ocppi {
 namespace runtime {

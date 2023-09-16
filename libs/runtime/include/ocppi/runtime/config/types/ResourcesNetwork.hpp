@@ -17,15 +17,7 @@
 #include <nlohmann/json.hpp>
 #include "ocppi/runtime/config/types/helper.hpp"
 
-namespace ocppi {
-namespace runtime {
-namespace config {
-namespace types {
-struct NetworkInterfacePriority;
-}
-}
-}
-}
+#include "ocppi/runtime/config/types/NetworkInterfacePriority.hpp"
 
 namespace ocppi {
 namespace runtime {
