@@ -8,7 +8,11 @@ GIT=${GIT:="git"}
 repoRoot="$("$GIT" rev-parse --show-toplevel)"
 cd "$repoRoot"/tools/codegen
 
-npm install .
+QUICKTYPE=${QUICKTYPE:="npx quicktype"}
+
+if [ "$QUICKTYPE" == "npx quicktype" ]; then
+	npm install .
+fi
 
 generate() {
 	schema="$1"
@@ -61,7 +65,7 @@ generate() {
 			echo ""
 			echo "// clang-format off"
 		} >"$filename"
-	done < <(npx quicktype "$schema" \
+	done < <($QUICKTYPE "$schema" \
 		--lang c++ \
 		-s schema \
 		-t "$toplevel_type" \
