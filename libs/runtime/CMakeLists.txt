@@ -128,5 +128,5 @@ pfl_add_library (
         tl::expected
         ocppi::common
         PRIVATE
-        semver
+        semver::semver
 )
