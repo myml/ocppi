@@ -1,148 +1,95 @@
-cmake_minimum_required (
-        VERSION
-                3.23
-)
+cmake_minimum_required(VERSION 3.23)
 
-project (
-        ocppi
-        LANGUAGES
-                CXX
-        VERSION
-                0.1.0
-)
+project(
+  ocppi
+  LANGUAGES CXX
+  VERSION 0.1.0)
 
-option (
-        OCPPI_BUILD_EXAMPLES "Build examples of ocppi or not"
-        ${PROJECT_IS_TOP_LEVEL}
-)
+option(OCPPI_BUILD_EXAMPLES "Build examples of ocppi or not"
+       ${PROJECT_IS_TOP_LEVEL})
 
-option (
-        OCPPI_ENABLE_TESTING "Enable test of ocppi or not"
-        ${PROJECT_IS_TOP_LEVEL}
-)
+option(OCPPI_ENABLE_TESTING "Enable test of ocppi or not"
+       ${PROJECT_IS_TOP_LEVEL})
 
-option (
-        OCPPI_BUILD_SHARED_LIBRARY "Build a shared library or not"
-        ${PROJECT_IS_TOP_LEVEL}
-)
+option(OCPPI_BUILD_SHARED_LIBRARY "Build a shared library or not"
+       ${PROJECT_IS_TOP_LEVEL})
 
-include (./cmake/CPM.cmake)
+include(./cmake/CPM.cmake)
 
-message (
-        STATUS
-                "Finding dependencies using CPM ..."
-)
+message(STATUS "Finding dependencies using CPM ...")
 
-CPMFindPackage (
-        NAME expected
-        VERSION
-                1.0.0
-        GITHUB_REPOSITORY
-                TartanLlama/expected
-        GIT_TAG
-                v1.1.0
-        GIT_SHALLOW
-                ON
-        OPTIONS
-                "EXPECTED_BUILD_TESTS OFF"
-        FIND_PACKAGE_ARGUMENTS
-                "NAMES tl-expected"
-        EXCLUDE_FROM_ALL
-                ON
-)
+CPMFindPackage(
+  NAME expected
+  VERSION 1.0.0
+  GITHUB_REPOSITORY TartanLlama/expected
+  GIT_TAG v1.1.0
+  GIT_SHALLOW ON
+  OPTIONS "EXPECTED_BUILD_TESTS OFF"
+  FIND_PACKAGE_ARGUMENTS "NAMES tl-expected"
+  EXCLUDE_FROM_ALL ON)
 
-CPMFindPackage (
-        NAME semver
-        VERSION
-                0.3.0
-        GITHUB_REPOSITORY
-                Neargye/Semver
-        GIT_TAG
-                v0.3.0
-        GIT_SHALLOW
-                ON
-        EXCLUDE_FROM_ALL
-                ON
-)
+CPMFindPackage(
+  NAME semver
+  VERSION 0.3.0
+  GITHUB_REPOSITORY Neargye/Semver
+  GIT_TAG v0.3.0
+  GIT_SHALLOW ON
+  EXCLUDE_FROM_ALL ON)
 
-CPMFindPackage (
-        NAME nlohmann_json
-        VERSION
-                3.11.2
-        GITHUB_REPOSITORY
-                nlohmann/json
-        GIT_TAG
-                v3.11.2
-        GIT_SHALLOW
-                ON
-        EXCLUDE_FROM_ALL
-                ON
-)
+CPMFindPackage(
+  NAME nlohmann_json
+  VERSION 3.11.2
+  GITHUB_REPOSITORY nlohmann/json
+  GIT_TAG v3.11.2
+  GIT_SHALLOW ON
+  EXCLUDE_FROM_ALL ON)
 
-CPMFindPackage (
-        NAME Catch2
-        VERSION
-                2.13.10
-        GITHUB_REPOSITORY
-                catchorg/Catch2
-        GIT_TAG
-                v2.13.10
-        GIT_SHALLOW
-                ON
-        EXCLUDE_FROM_ALL
-                ON
-)
+CPMFindPackage(
+  NAME Catch2
+  VERSION 2.13.10
+  GITHUB_REPOSITORY catchorg/Catch2
+  GIT_TAG v2.13.10
+  GIT_SHALLOW ON
+  EXCLUDE_FROM_ALL ON)
 
-CPMFindPackage (
-        NAME Boost COMPONENTS headers
-        VERSION
-                1.74.0
-        GITHUB_REPOSITORY
-                "boostorg/boost"
-        GIT_TAG
-                "boost-1.74.0"
-        GIT_SHALLOW
-                ON
-        EXCLUDE_FROM_ALL
-                ON
-)
+CPMFindPackage(
+  NAME Boost COMPONENTS headers
+  VERSION 1.74.0
+  GITHUB_REPOSITORY "boostorg/boost"
+  GIT_TAG "boost-1.74.0"
+  GIT_SHALLOW ON
+  EXCLUDE_FROM_ALL ON)
 
-CPMFindPackage (
-        NAME spdlog
-        VERSION
-                1.10.0
-        GITHUB_REPOSITORY
-                "gabime/spdlog"
-        GIT_TAG
-                "v1.10.0"
-        GIT_SHALLOW
-                ON
-        EXCLUDE_FROM_ALL
-                ON
-)
+CPMFindPackage(
+  NAME spdlog
+  VERSION 1.10.0
+  GITHUB_REPOSITORY "gabime/spdlog"
+  GIT_TAG "v1.10.0"
+  GIT_SHALLOW ON
+  EXCLUDE_FROM_ALL ON)
 
-include (./cmake/GitSemver.cmake)
+include(./cmake/GitSemver.cmake)
 
-set (OCPPI_SEMVER ${PROJECT_VERSION})
-gitsemver (OCPPI_SEMVER)
+set(OCPPI_SEMVER ${PROJECT_VERSION})
+gitsemver(OCPPI_SEMVER)
 
-set (OCPPI_OCI_RUNTIME_SPEC_MIN "1.0.0")
-set (OCPPI_OCI_RUNTIME_SPEC_MAX "1.1.0")
-set (OCPPI_LIBRARY_TYPE "STATIC")
+set(OCPPI_OCI_RUNTIME_SPEC_MIN "1.0.0")
+set(OCPPI_OCI_RUNTIME_SPEC_MAX "1.1.0")
+set(OCPPI_LIBRARY_TYPE "STATIC")
 if(OCPPI_BUILD_SHARED_LIBRARY)
-        set (OCPPI_LIBRARY_TYPE "SHARED")
+  set(OCPPI_LIBRARY_TYPE "SHARED")
 endif()
-set (OCPPI_SOVERSION 1)
+set(OCPPI_SOVERSION 1)
 
-set (CMAKE_CXX_FLAGS_DEBUG "-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE")
+set(CMAKE_CXX_FLAGS_DEBUG "-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE")
 
-include (./cmake/PFL.cmake)
+include(./cmake/PFL.cmake)
 
-set (OCPPI_LIBS common runtime cli)
+set(OCPPI_LIBS common runtime cli)
 
-set (PFL_ENABLE_TESTING ${OCPPI_ENABLE_TESTING})
-set (PFL_BUILD_EXAMPLES ${OCPPI_BUILD_EXAMPLES})
+set(PFL_ENABLE_TESTING ${OCPPI_ENABLE_TESTING})
+set(PFL_BUILD_EXAMPLES ${OCPPI_BUILD_EXAMPLES})
 
 foreach(LIB ${OCPPI_LIBS})
-        pfl_add_subdirectory (TARGET_PREFIX ocppi libs/${LIB})
+  pfl_add_subdirectory(TARGET_PREFIX ocppi libs/${LIB})
 endforeach()
