@@ -1,5 +1,5 @@
 pfl_add_library(
-  NO_INSTALL # cli is not ready for publish
+  INTERNAL # cli is not ready for publish
   SOVERSION
   ${OCPPI_SOVERSION}
   VERSION

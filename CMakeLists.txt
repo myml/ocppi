@@ -86,10 +86,6 @@ set(CMAKE_CXX_FLAGS_DEBUG "-DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_TRACE")
 include(./cmake/PFL.cmake)
 
 set(OCPPI_LIBS common runtime cli)
-
-set(PFL_ENABLE_TESTING ${OCPPI_ENABLE_TESTING})
-set(PFL_BUILD_EXAMPLES ${OCPPI_BUILD_EXAMPLES})
-
-foreach(LIB ${OCPPI_LIBS})
-  pfl_add_subdirectory(TARGET_PREFIX ocppi libs/${LIB})
-endforeach()
+pfl_init(ENABLE_TESTING ${OCPPI_ENABLE_TESTING} BUILD_EXAMPLES
+         ${OCPPI_BUILD_EXAMPLES})
+pfl_add_libraries(${OCPPI_LIBS})

@@ -3,6 +3,7 @@ find_package(
 pkg_check_modules(SYSTEMD REQUIRED IMPORTED_TARGET systemd)
 
 pfl_add_executable(
+  INTERNAL
   SOURCES
   src/main.cpp
   LINK_LIBRARIES
