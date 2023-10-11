@@ -23,16 +23,19 @@ set_property(GLOBAL PROPERTY PFL_INITIALIZED true)
 #
 # EXTERNALS list of string: External projects to build.
 function(pfl_init)
-  cmake_parse_arguments(PFL_INIT "" "ENABLE_TESTING;BUILD_EXAMPLES" "EXTERNALS"
-                        ${ARGN})
+  cmake_parse_arguments(PFL_INIT "" "INSTALL;ENABLE_TESTING;BUILD_EXAMPLES"
+                        "EXTERNALS" ${ARGN})
 
-  message(STATUS "PFL: Version 0.1.0")
+  message(STATUS "PFL: Version 0.2.0")
 
   set(PFL_ENABLE_TESTING
       ${PFL_INIT_ENABLE_TESTING}
       PARENT_SCOPE)
   set(PFL_BUILD_EXAMPLES
       ${PFL_INIT_BUILD_EXAMPLES}
+      PARENT_SCOPE)
+  set(PFL_INSTALL
+      ${PFL_INIT_INSTALL}
       PARENT_SCOPE)
   foreach(EXTERNAL ${PFL_INIT_EXTERNALS})
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/external/${EXTERNAL})
@@ -96,6 +99,10 @@ function(pfl_add_libraries)
   foreach(LIB ${PFL_ADD_LIBRARIES_LIBS})
     add_subdirectory(libs/${LIB})
   endforeach()
+
+  if(PFL_INSTALL)
+    return()
+  endif()
 
   include(GNUInstallDirs)
 
@@ -236,7 +243,7 @@ function(pfl_add_library)
     target_compile_features(${TARGET_NAME} ${PFL_ADD_LIBRARY_COMPILE_FEATURES})
   endif()
 
-  if(NOT PFL_ADD_LIBRARY_INTERNAL)
+  if(PFL_INSTALL AND NOT PFL_ADD_LIBRARY_INTERNAL)
     include(GNUInstallDirs)
 
     install(
@@ -387,7 +394,7 @@ function(pfl_add_executable)
                             ${PFL_ADD_EXECUTABLE_COMPILE_FEATURES})
   endif()
 
-  if(PFL_ADD_EXECUTABLE_INTERNAL)
+  if(PFL_ADD_EXECUTABLE_INTERNAL OR NOT PFL_INSTALL)
     return()
   endif()
 

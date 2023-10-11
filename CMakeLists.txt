@@ -14,6 +14,8 @@ option(OCPPI_ENABLE_TESTING "Enable test of ocppi or not"
 option(OCPPI_BUILD_SHARED_LIBRARY "Build a shared library or not"
        ${PROJECT_IS_TOP_LEVEL})
 
+option(OCPPI_INSTALL "Enable install target or not" ${PROJECT_IS_TOP_LEVEL})
+
 include(./cmake/CPM.cmake)
 
 CPMFindPackage(
@@ -85,5 +87,5 @@ include(./cmake/PFL.cmake)
 
 set(OCPPI_LIBS common runtime cli)
 pfl_init(ENABLE_TESTING ${OCPPI_ENABLE_TESTING} BUILD_EXAMPLES
-         ${OCPPI_BUILD_EXAMPLES})
+         ${OCPPI_BUILD_EXAMPLES} INSTALL ${OCPPI_INSTALL})
 pfl_add_libraries(VERSION ${PROJECT_VERSION} LIBS ${OCPPI_LIBS})
