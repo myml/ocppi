@@ -1,0 +1,12 @@
+@PACKAGE_INIT@
+
+list (APPEND CMAKE_MODULE_PATH "@PACKAGE_cmakeModulesDir@")
+
+foreach(_comp ${ocppi_FIND_COMPONENTS})
+  set(_comp_cmakelist "${CMAKE_CURRENT_LIST_DIR}/ocppi__${_comp}.cmake")
+  if (NOT EXISTS "${_comp_cmakelist}")
+    set(ocppi_FOUND False)
+    set(ocppi_NOT_FOUND_MESSAGE "Unsupported component: ${_comp}")
+  endif()
+  include("${_comp_cmakelist}")
+endforeach()

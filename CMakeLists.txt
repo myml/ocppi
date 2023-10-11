@@ -88,4 +88,4 @@ include(./cmake/PFL.cmake)
 set(OCPPI_LIBS common runtime cli)
 pfl_init(ENABLE_TESTING ${OCPPI_ENABLE_TESTING} BUILD_EXAMPLES
          ${OCPPI_BUILD_EXAMPLES})
-pfl_add_libraries(${OCPPI_LIBS})
+pfl_add_libraries(VERSION ${PROJECT_VERSION} LIBS ${OCPPI_LIBS})
