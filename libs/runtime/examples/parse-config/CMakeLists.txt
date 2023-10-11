@@ -1,4 +1,5 @@
 pfl_add_executable(
+  INTERNAL
   SOURCES
   ./src/main.cpp
   COMPILE_FEATURES
