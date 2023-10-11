@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.23)
 project(
   ocppi
   LANGUAGES CXX
-  VERSION 0.1.4)
+  VERSION 0.1.5)
 
 option(OCPPI_BUILD_EXAMPLES "Build examples of ocppi or not"
        ${PROJECT_IS_TOP_LEVEL})
