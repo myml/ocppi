@@ -16,8 +16,6 @@ option(OCPPI_BUILD_SHARED_LIBRARY "Build a shared library or not"
 
 include(./cmake/CPM.cmake)
 
-message(STATUS "Finding dependencies using CPM ...")
-
 CPMFindPackage(
   NAME expected
   VERSION 1.0.0
