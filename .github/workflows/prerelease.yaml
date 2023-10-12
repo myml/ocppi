@@ -2,8 +2,6 @@ name: "Auto prerelease"
 
 on:
   push:
-    branches:
-      - 'master'
     tags:
       - "v*-*"
 
