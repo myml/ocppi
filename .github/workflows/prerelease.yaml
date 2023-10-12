@@ -1,12 +1,11 @@
-name: "Auto release"
+name: "Auto prerelease"
 
 on:
   push:
     branches:
       - 'master'
     tags:
-      - "v*"
-      - "!v*-*"
+      - "v*-*"
 
 jobs:
   release:
@@ -19,4 +18,4 @@ jobs:
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          prerelease: false
+          prerelease: true
