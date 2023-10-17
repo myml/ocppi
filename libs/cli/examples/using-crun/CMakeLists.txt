@@ -1,6 +1,6 @@
 find_package(
   PkgConfig REQUIRED)
-pkg_check_modules(SYSTEMD REQUIRED IMPORTED_TARGET systemd)
+pkg_check_modules(systemd REQUIRED IMPORTED_TARGET libsystemd)
 
 pfl_add_executable(
   INTERNAL
@@ -10,4 +10,4 @@ pfl_add_executable(
   PUBLIC
   ocppi::cli
   PRIVATE
-  systemd)
+  PkgConfig::systemd)
