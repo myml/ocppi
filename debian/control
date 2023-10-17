@@ -9,7 +9,10 @@ Build-Depends: catch2,
                libboost-dev,
                libexpected-dev,
                libsemver-dev,
-               nlohmann-json3-dev
+               libspdlog-dev,
+               libsystemd-dev,
+               nlohmann-json3-dev,
+               pkgconf
 
 Package: libocppi-dev
 Architecture: any
