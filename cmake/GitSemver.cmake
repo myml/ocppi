@@ -16,7 +16,7 @@ function(gitsemver_message)
   message(STATUS "GitSemver: " ${ARGN})
 endfunction()
 
-message(STATUS "GitSemver: --==Version: v0.1.0==--")
+message(STATUS "GitSemver: --==Version: v0.1.1==--")
 
 # GitSemver will write the result to varname if it successfully get version
 # string from git repository.
@@ -27,8 +27,16 @@ function(GitSemver varname)
 
   gitsemver_message("Getting version from git repository ...")
 
-  find_package(Git REQUIRED)
-  find_program(SED_EXECUTABLE NAMES sed REQUIRED)
+  find_package(Git)
+  if(NOT GIT_FOUND)
+    gitsemver_message("Failed: git executable not found.")
+    return()
+  endif()
+  find_program(SED_EXECUTABLE NAMES sed)
+  if(NOT SED_EXECUTABLE)
+    gitsemver_message("Failed: sed executable not found.")
+    return()
+  endif()
   execute_process(
     COMMAND ${GIT_EXECUTABLE} describe --tags --long --dirty
     COMMAND ${SED_EXECUTABLE} -e s/-\\\([[:digit:]]\\+\\\)-g/+\\1\\./
@@ -41,7 +49,7 @@ function(GitSemver varname)
 
   foreach(ret ${rets})
     if(NOT ret EQUAL 0)
-      gitsemver_message("Failed.")
+      gitsemver_message("Failed: command failed.")
       return()
     endif()
   endforeach()
