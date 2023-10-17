@@ -1,7 +1,20 @@
 #pragma once
 
-#include "ocppi/runtime/ExecOption.hpp"
-#include "ocppi/runtime/SpecRuntime.hpp"
+#include <exception> // for exception_ptr
+#include <string>    // for string
+#include <vector>    // for vector
+
+#include "ocppi/runtime/SpecRuntime.hpp" // for SpecRuntime
+#include "tl/expected.hpp"               // for expected
+
+namespace ocppi
+{
+namespace runtime
+{
+class ContainerID;
+class ExecOption;
+} // namespace runtime
+} // namespace ocppi
 
 namespace ocppi::runtime
 {

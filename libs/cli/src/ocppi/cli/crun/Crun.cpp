@@ -1,18 +1,36 @@
 #include "ocppi/cli/crun/Crun.hpp"
 
-#include <iostream>
-#include <system_error>
+#include <algorithm>        // for max
+#include <initializer_list> // for initializer_list
+#include <list>             // for list, operator!=
+#include <map>              // for operator!=, operator==
+#include <type_traits>      // for remove_reference<>::type
+#include <utility>          // for move
 
-#include "boost/process/args.hpp"
-#include "boost/process/io.hpp"
-#include "boost/process/pipe.hpp"
-#include "boost/process/system.hpp"
-#include "ocppi/cli/CommandFailedError.hpp"
-#include "ocppi/cli/format.hpp"
-#include "ocppi/runtime/ContainerID.hpp"
-#include "ocppi/runtime/Signal.hpp"
-#include "ocppi/runtime/state/types/Generators.hpp"
-#include "spdlog/spdlog.h"
+#include "boost/process/args.hpp"           // for args, args_
+#include "boost/process/io.hpp"             // for std_out, std_out_
+#include "boost/process/pipe.hpp"           // for ipstream
+#include "boost/process/system.hpp"         // for system
+#include "nlohmann/json.hpp"                // for basic_json, basic_jso...
+#include "nlohmann/json_fwd.hpp"            // for json
+#include "ocppi/cli/CommandFailedError.hpp" // for CommandFailedError
+#include "ocppi/cli/format.hpp"             // IWYU pragma: keep
+#include "ocppi/runtime/ContainerID.hpp"    // for ContainerID
+#include "ocppi/runtime/CreateOption.hpp"   // for CreateOption
+#include "ocppi/runtime/DeleteOption.hpp"   // for DeleteOption
+#include "ocppi/runtime/ExecOption.hpp"     // for ExecOption
+#include "ocppi/runtime/KillOption.hpp"     // for KillOption
+#include "ocppi/runtime/Signal.hpp"         // for Signal
+#include "ocppi/runtime/StartOption.hpp"    // for StartOption
+#include "ocppi/runtime/StateOption.hpp"    // for StateOption
+#include "ocppi/runtime/state/types/Generators.hpp" // IWYU pragma: keep
+#include "ocppi/runtime/state/types/State.hpp"      // for State
+#include "spdlog/spdlog.h"                          // for SPDLOG_LOGGER_DEBUG
+
+namespace spdlog
+{
+class logger;
+} // namespace spdlog
 
 namespace ocppi::cli::crun
 {

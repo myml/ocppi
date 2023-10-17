@@ -1,16 +1,36 @@
-#include <unistd.h>
+#include <stdio.h>  // for FILE, stderr
+#include <unistd.h> // for isatty
 
-#include <iostream>
+#include <exception>   // for exception, rethrow_exce...
+#include <iostream>    // for operator<<, char_traits
+#include <memory>      // for shared_ptr, make_shared
+#include <string>      // for operator<<
+#include <string_view> // for operator<<, string_view
+#include <utility>     // for move
+#include <vector>      // for vector
 
-#include "ocppi/cli/crun/Crun.hpp"
-#include "ocppi/runtime/ContainerID.hpp"
-#include "ocppi/runtime/Signal.hpp"
-#include "ocppi/runtime/state/types/Generators.hpp"
-#include "ocppi/runtime/state/types/State.hpp"
-#include "spdlog/cfg/env.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
-#include "spdlog/sinks/systemd_sink.h"
-#include "spdlog/spdlog.h"
+#include <bits/types/struct_FILE.h> // for _IO_FILE
+
+#include "nlohmann/json.hpp"                        // for basic_json
+#include "nlohmann/json_fwd.hpp"                    // for json
+#include "ocppi/cli/CLI.hpp"                        // for CLI
+#include "ocppi/cli/crun/Crun.hpp"                  // for Crun
+#include "ocppi/runtime/ContainerID.hpp"            // IWYU pragma: keep
+#include "ocppi/runtime/Signal.hpp"                 // IWYU pragma: keep
+#include "ocppi/runtime/state/types/Generators.hpp" // IWYU pragma: keep
+#include "spdlog/common.h"                          // for trace
+#include "spdlog/logger.h"                          // for logger
+#include "spdlog/sinks/stdout_color_sinks.h"        // for stderr_color_sink_mt
+#include "spdlog/sinks/systemd_sink.h"              // for systemd_sink_mt
+#include "tl/expected.hpp"                          // for expected
+
+namespace spdlog
+{
+namespace sinks
+{
+class sink;
+} // namespace sinks
+} // namespace spdlog
 
 void printException(std::string_view msg, std::exception_ptr ptr) noexcept
 try {

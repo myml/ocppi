@@ -1,6 +1,14 @@
 #include "ocppi/cli/CLI.hpp"
 
-#include <utility>
+#include <errno.h> // for ENOENT
+
+#include <system_error> // for generic_category, system_error
+#include <utility>      // for move
+
+namespace spdlog
+{
+class logger;
+} // namespace spdlog
 
 namespace ocppi::cli
 {

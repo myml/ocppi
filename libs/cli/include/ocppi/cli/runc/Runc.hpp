@@ -1,6 +1,35 @@
 #pragma once
 
-#include "ocppi/cli/CLI.hpp"
+#include <exception>  // for exception_ptr
+#include <filesystem> // for path
+#include <memory>     // for unique_ptr
+#include <vector>     // for vector
+
+#include <experimental/propagate_const> // for propagate_const
+
+#include "ocppi/cli/CLI.hpp" // for CLI
+#include "tl/expected.hpp"   // for expected
+
+namespace ocppi
+{
+namespace runtime
+{
+class ContainerID;
+class CreateOption;
+class DeleteOption;
+class KillOption;
+class Signal;
+class StartOption;
+class StateOption;
+namespace state
+{
+namespace types
+{
+struct State;
+} // namespace types
+} // namespace state
+} // namespace runtime
+} // namespace ocppi
 
 namespace ocppi::cli::runc
 {
@@ -40,6 +69,7 @@ class Runc : public CLI {
 
     protected:
         struct impl;
+
         friend struct impl;
         std::experimental::propagate_const<std::unique_ptr<impl>> pImpl;
 };

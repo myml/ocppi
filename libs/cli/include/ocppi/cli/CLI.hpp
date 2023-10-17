@@ -1,9 +1,14 @@
 #pragma once
 
-#include <experimental/propagate_const>
+#include <filesystem> // for path
+#include <memory>     // for shared_ptr
 
-#include "ocppi/runtime/Runtime.hpp"
-#include "spdlog/logger.h"
+#include "ocppi/runtime/Runtime.hpp" // for Runtime
+
+namespace spdlog
+{
+class logger;
+} // namespace spdlog
 
 namespace ocppi::cli
 {

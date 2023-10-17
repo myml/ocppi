@@ -1,6 +1,39 @@
 #pragma once
 
-#include "ocppi/cli/CLI.hpp"
+#include <exception>  // for exception_ptr
+#include <filesystem> // for path
+#include <memory>     // for make_shared, shared_ptr, unique_ptr
+#include <string>     // for string
+#include <vector>     // for vector
+
+#include "ocppi/cli/CLI.hpp" // for CLI
+#include "tl/expected.hpp"   // for expected
+
+namespace ocppi
+{
+namespace runtime
+{
+class ContainerID;
+class CreateOption;
+class DeleteOption;
+class ExecOption;
+class KillOption;
+class Signal;
+class StartOption;
+class StateOption;
+namespace state
+{
+namespace types
+{
+struct State;
+} // namespace types
+} // namespace state
+} // namespace runtime
+} // namespace ocppi
+namespace spdlog
+{
+class logger;
+} // namespace spdlog
 
 namespace ocppi::cli::crun
 {

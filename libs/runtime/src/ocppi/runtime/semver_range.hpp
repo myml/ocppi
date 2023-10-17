@@ -2,9 +2,6 @@
 
 #include <utility> // for pair
 
-#include "ocppi/runtime/configure.hpp"
-#include "semver.hpp"
-
 namespace semver
 {
 struct version;
