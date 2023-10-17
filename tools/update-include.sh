@@ -10,9 +10,18 @@ IWYU_TOOL=${IWYU_TOOL:=$({
 	echo iwyu-tool
 })}
 
-cmake -B build-iwyu -DCMAKE_EXPORT_COMPILE_COMMANDS=YES -DCMAKE_CXX_COMPILER=/usr/bin/clang++
+cmake \
+	-B build-iwyu \
+	-DFETCHCONTENT_QUIET=OFF \
+	-DOCPPI_INSTALL=NO \
+	-DCPM_DOWNLOAD_ALL=YES \
+	-DCMAKE_CXX_STANDARD=17 \
+	-DCMAKE_CXX_STANDARD_REQUIRED=YES \
+	-DCMAKE_EXPORT_COMPILE_COMMANDS=YES \
+	-DCMAKE_CXX_COMPILER=/usr/bin/clang++
 
-"$IWYU_TOOL" -p build-iwyu | tee build/iwyu.out
+# shellcheck disable=SC2046
+"$IWYU_TOOL" -p build-iwyu $(find . -path './libs*' \( -name '*.c' -o -name '*.cpp' \) -printf "%p ") | tee build/iwyu.out
 
 IWYU_FIX_INCLUDES=${IWYU_FIX_INCLUDES:=$({
 	command -v fix_include &>/dev/null && echo "fix_include" && exit
@@ -22,8 +31,9 @@ IWYU_FIX_INCLUDES=${IWYU_FIX_INCLUDES:=$({
 
 "$IWYU_FIX_INCLUDES" \
 	--ignore_re \
-	'(build|src/ocppi/runtime/(config|features|state)/types)/*' \
+	'(\.cache|build|src\/ocppi\/runtime\/(config|features|state)\/types)\/*' \
 	--update_comments \
+	--nosafe_headers \
 	<build/iwyu.out
 
 CLANG_FORMAT=${CLANG_FORMAT:=$({

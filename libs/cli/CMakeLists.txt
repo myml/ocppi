@@ -29,4 +29,4 @@ pfl_add_library(
   tl::expected
   spdlog::spdlog
   PRIVATE
-  Boost::headers)
+  Boost::process)
