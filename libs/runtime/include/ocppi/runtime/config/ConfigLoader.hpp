@@ -1,3 +1,5 @@
+#pragma once
+
 #include <bitset>    // for bitset, bitset<>::reference
 #include <cstddef>   // for size_t
 #include <exception> // for exception
