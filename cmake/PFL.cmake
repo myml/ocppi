@@ -26,7 +26,7 @@ function(pfl_init)
   cmake_parse_arguments(PFL_INIT "" "INSTALL;ENABLE_TESTING;BUILD_EXAMPLES"
                         "EXTERNALS" ${ARGN})
 
-  message(STATUS "PFL: --==Version: v0.2.3==--")
+  message(STATUS "PFL: --==Version: v0.2.4==--")
 
   set(PFL_ENABLE_TESTING
       ${PFL_INIT_ENABLE_TESTING}
@@ -100,7 +100,7 @@ function(pfl_add_libraries)
     add_subdirectory(libs/${LIB})
   endforeach()
 
-  if(PFL_INSTALL)
+  if(NOT PFL_INSTALL)
     return()
   endif()
 
