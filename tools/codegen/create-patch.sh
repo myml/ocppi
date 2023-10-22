@@ -26,8 +26,9 @@ cd "$repoRoot"
 
 "$USER_SHELL"
 
-! diff -ruN "${origin#"$repoRoot/"}" "${include#"$repoRoot/"}" \
-	>"$repoRoot"/tools/codegen/fix-unknow-types.patch
+diff -ruN "${origin#"$repoRoot/"}" "${include#"$repoRoot/"}" \
+	>"$repoRoot"/tools/codegen/fix.patch &&
+	exit 1
 
 chmod -R u+w "$origin"
 rm -rf "$origin"

@@ -4,3 +4,6 @@
 [submodule ".format"]
 	path = .format
 	url = https://github.com/black-desk/.format
+[submodule "tools/codegen/quicktype"]
+	path = tools/codegen/quicktype
+	url = https://github.com/black-desk/quicktype

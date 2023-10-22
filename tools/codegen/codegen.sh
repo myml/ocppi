@@ -6,13 +6,29 @@ set -o pipefail
 GIT=${GIT:="git"}
 
 repoRoot="$("$GIT" rev-parse --show-toplevel)"
-cd "$repoRoot"/tools/codegen
+cd "$repoRoot/tools/codegen"
 
-QUICKTYPE=${QUICKTYPE:="npx quicktype"}
+git submodule update --init --depth 1
 
-if [ "$QUICKTYPE" == "npx quicktype" ]; then
-	npm install .
+QUICKTYPE=${QUICKTYPE:=""}
+
+if [ -z "$QUICKTYPE" ]; then
+	pushd quicktype
+	npm i
+	npm run build
+	popd
 fi
+
+quicktype() {
+	if [ -z "$QUICKTYPE" ]; then
+		pushd quicktype
+		npx quicktype "$@"
+		popd
+	else
+		exec $QUICKTYPE "$@"
+
+	fi
+}
 
 generate() {
 	schema="$1"
@@ -65,7 +81,7 @@ generate() {
 			echo ""
 			echo "// clang-format off"
 		} >"$filename"
-	done < <($QUICKTYPE "$schema" \
+	done < <(quicktype "$schema" \
 		--lang c++ \
 		-s schema \
 		-t "$toplevel_type" \
@@ -108,7 +124,7 @@ generate \
 	"$include" \
 	"ocppi/runtime/features/types"
 
-PATCH_FILE=${PATCH_FILE:="$repoRoot"/tools/codegen/fix-unknow-types.patch}
+PATCH_FILE=${PATCH_FILE:="$repoRoot"/tools/codegen/fix.patch}
 
 if [[ ! -f "$PATCH_FILE" ]]; then
 	exit
