@@ -20,13 +20,20 @@ include(./cmake/CPM.cmake)
 
 CPMFindPackage(
   NAME expected
-  VERSION 1.0.0
+  VERSION 1.0.0 # NOTE: This project seems forget to update version in cmake
+                # when release 1.1.0.
   GITHUB_REPOSITORY TartanLlama/expected
   GIT_TAG v1.1.0
   GIT_SHALLOW ON
   OPTIONS "EXPECTED_BUILD_TESTS OFF"
   FIND_PACKAGE_ARGUMENTS "NAMES tl-expected"
   EXCLUDE_FROM_ALL ON)
+
+if(NOT TARGET tl::expected)
+  # NOTE: v1.0.0 version of tl::expected doesn't have a namespaced alias so we
+  # have to add it here.
+  add_library(tl::expected ALIAS expected)
+endif()
 
 CPMFindPackage(
   NAME semver
