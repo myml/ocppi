@@ -4,6 +4,7 @@ on: [pull_request]
 
 jobs:
   checks:
+    name: Run black-desk/checks
     permissions:
       checks: write
       contents: read
@@ -11,3 +12,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: black-desk/checks@master
+  build-and-test:
+    name: Build
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Checkout project.
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install system dependencies.
+        run: |
+          sudo apt update &&
+          sudo apt install libsystemd-dev
+      - name: Build project with cmake.
+        run: |
+          export CPM_DOWNLOAD_ALL="ON" &&
+          export CFLAGS="$CFLAGS -Wall" &&
+          export CFLAGS="$CFLAGS -Wextra" &&
+          export CFLAGS="$CFLAGS -Wpedantic" &&
+          export CFLAGS="$CFLAGS -Wno-extra-semi -Wno-unused-command-line-argument -Wno-gnu-zero-variadic-macro-arguments" &&
+          export CFLAGS="$CFLAGS -fsanitize=address,undefined" &&
+          export CXXFLAGS="$CFLAGS" &&
+          cmake -B build &&
+          cmake --build build
