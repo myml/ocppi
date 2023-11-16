@@ -32,5 +32,6 @@ pfl_add_library(
   ocppi::runtime
   tl::expected
   spdlog::spdlog
+  fmt::fmt
   PRIVATE
   Boost::process)

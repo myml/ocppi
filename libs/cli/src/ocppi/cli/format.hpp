@@ -2,7 +2,7 @@
 
 #include <list>
 
-#include "fmt/format.h"
+#include <fmt/format.h>
 
 template <typename Element>
 class fmt::formatter<std::list<Element>> {
