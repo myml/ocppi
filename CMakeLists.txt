@@ -41,15 +41,15 @@ CPMFindPackage(
   GITHUB_REPOSITORY Neargye/Semver
   GIT_TAG v0.3.0
   GIT_SHALLOW ON
+  GIT_PROGRESS ON
   EXCLUDE_FROM_ALL ON)
 
 CPMFindPackage(
   NAME nlohmann_json
   VERSION 3.11.2
-  GITHUB_REPOSITORY nlohmann/json
-  GIT_TAG v3.11.2
-  GIT_SHALLOW ON
-  EXCLUDE_FROM_ALL ON)
+  URL "https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz"
+  EXCLUDE_FROM_ALL ON
+  OPTIONS "JSON_Install ON")
 
 CPMFindPackage(
   NAME Catch2
@@ -57,19 +57,15 @@ CPMFindPackage(
   GITHUB_REPOSITORY catchorg/Catch2
   GIT_TAG v2.13.10
   GIT_SHALLOW ON
+  GIT_PROGRESS ON
   EXCLUDE_FROM_ALL ON)
 
 CPMFindPackage(
   NAME Boost COMPONENTS process
   VERSION 1.74.0
-  GITHUB_REPOSITORY "boostorg/boost"
-  GIT_TAG "boost-1.81.0"
-  GIT_SHALLOW ON
+  # NOTE: 1.81.0 is the oldest release on gtihub
+  URL "https://github.com/boostorg/boost/releases/download/boost-1.81.0/boost-1.81.0.7z"
   EXCLUDE_FROM_ALL ON)
-
-if(NOT TARGET Boost::process)
-  add_library(Boost::process ALIAS Boost::headers)
-endif()
 
 CPMFindPackage(
   NAME spdlog
@@ -77,7 +73,9 @@ CPMFindPackage(
   GITHUB_REPOSITORY "gabime/spdlog"
   GIT_TAG "v1.10.0"
   GIT_SHALLOW ON
-  EXCLUDE_FROM_ALL ON)
+  EXCLUDE_FROM_ALL ON
+  # NOTE: https://github.com/gabime/spdlog/issues/1190
+  OPTIONS "CMAKE_POSITION_INDEPENDENT_CODE ON")
 
 include(./cmake/GitSemver.cmake)
 

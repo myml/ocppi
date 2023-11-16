@@ -1,3 +1,7 @@
+if(NOT TARGET Boost::process)
+  add_library(Boost::process ALIAS Boost::headers)
+endif()
+
 pfl_add_library(
   INTERNAL # cli is not ready for publish
   SOVERSION
