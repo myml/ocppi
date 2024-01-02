@@ -52,15 +52,6 @@ CPMFindPackage(
   OPTIONS "JSON_Install ON")
 
 CPMFindPackage(
-  NAME Catch2
-  VERSION 2.13.10
-  GITHUB_REPOSITORY catchorg/Catch2
-  GIT_TAG v2.13.10
-  GIT_SHALLOW ON
-  GIT_PROGRESS ON
-  EXCLUDE_FROM_ALL ON)
-
-CPMFindPackage(
   NAME Boost COMPONENTS process
   VERSION 1.74.0
   # NOTE: 1.81.0 is the oldest release on gtihub
