@@ -1,7 +1,12 @@
 diff -ruN libs/runtime/include.orig/ocppi/runtime/config/types/Config.hpp libs/runtime/include/ocppi/runtime/config/types/Config.hpp
---- libs/runtime/include.orig/ocppi/runtime/config/types/Config.hpp	2023-10-22 10:47:22.692355495 +0800
-+++ libs/runtime/include/ocppi/runtime/config/types/Config.hpp	2023-10-22 10:47:28.552355069 +0800
-@@ -45,7 +45,7 @@
+--- libs/runtime/include.orig/ocppi/runtime/config/types/Config.hpp	2024-01-02 22:50:01.262079011 +0800
++++ libs/runtime/include/ocppi/runtime/config/types/Config.hpp	2024-01-02 22:50:09.958183858 +0800
+@@ -41,11 +41,11 @@
+ * Open Container Initiative Runtime Specification Container Configuration Schema
+ */
+ struct Config {
+-std::optional<std::map<std::string, nlohmann::json>> annotations;
++std::optional<std::map<std::string, std::string>> annotations;
  std::optional<std::string> domainname;
  std::optional<Hooks> hooks;
  std::optional<std::string> hostname;
@@ -11,8 +16,8 @@ diff -ruN libs/runtime/include.orig/ocppi/runtime/config/types/Config.hpp libs/r
  std::string ociVersion;
  std::optional<Process> process;
 diff -ruN libs/runtime/include.orig/ocppi/runtime/config/types/Generators.hpp libs/runtime/include/ocppi/runtime/config/types/Generators.hpp
---- libs/runtime/include.orig/ocppi/runtime/config/types/Generators.hpp	2023-10-22 10:47:22.692355495 +0800
-+++ libs/runtime/include/ocppi/runtime/config/types/Generators.hpp	2023-10-22 10:47:28.552355069 +0800
+--- libs/runtime/include.orig/ocppi/runtime/config/types/Generators.hpp	2024-01-02 22:50:01.262079011 +0800
++++ libs/runtime/include/ocppi/runtime/config/types/Generators.hpp	2024-01-02 22:50:15.334248663 +0800
 @@ -683,7 +683,7 @@
  x.network = get_stack_optional<ResourcesNetwork>(j, "network");
  x.pids = get_stack_optional<Pids>(j, "pids");
@@ -31,7 +36,12 @@ diff -ruN libs/runtime/include.orig/ocppi/runtime/config/types/Generators.hpp li
  x.timeOffsets = get_stack_optional<TimeOffsets>(j, "timeOffsets");
  x.uidMappings = get_stack_optional<std::vector<IdMapping>>(j, "uidMappings");
  }
-@@ -1461,7 +1461,7 @@
+@@ -1457,11 +1457,11 @@
+ }
+
+ inline void from_json(const json & j, Config& x) {
+-x.annotations = get_stack_optional<std::map<std::string, nlohmann::json>>(j, "annotations");
++x.annotations = get_stack_optional<std::map<std::string, std::string>>(j, "annotations");
  x.domainname = get_stack_optional<std::string>(j, "domainname");
  x.hooks = get_stack_optional<Hooks>(j, "hooks");
  x.hostname = get_stack_optional<std::string>(j, "hostname");
@@ -52,8 +62,8 @@ diff -ruN libs/runtime/include.orig/ocppi/runtime/config/types/Generators.hpp li
  if (x.mounts) {
  j["mounts"] = x.mounts;
 diff -ruN libs/runtime/include.orig/ocppi/runtime/config/types/Linux.hpp libs/runtime/include/ocppi/runtime/config/types/Linux.hpp
---- libs/runtime/include.orig/ocppi/runtime/config/types/Linux.hpp	2023-10-22 10:47:22.692355495 +0800
-+++ libs/runtime/include/ocppi/runtime/config/types/Linux.hpp	2023-10-22 10:47:28.552355069 +0800
+--- libs/runtime/include.orig/ocppi/runtime/config/types/Linux.hpp	2024-01-02 22:50:01.262079011 +0800
++++ libs/runtime/include/ocppi/runtime/config/types/Linux.hpp	2024-01-02 22:50:15.822254545 +0800
 @@ -62,7 +62,7 @@
  std::optional<LinuxResources> resources;
  std::optional<RootfsPropagation> rootfsPropagation;
@@ -64,8 +74,8 @@ diff -ruN libs/runtime/include.orig/ocppi/runtime/config/types/Linux.hpp libs/ru
  std::optional<std::vector<IdMapping>> uidMappings;
  };
 diff -ruN libs/runtime/include.orig/ocppi/runtime/config/types/LinuxResources.hpp libs/runtime/include/ocppi/runtime/config/types/LinuxResources.hpp
---- libs/runtime/include.orig/ocppi/runtime/config/types/LinuxResources.hpp	2023-10-22 10:47:22.692355495 +0800
-+++ libs/runtime/include/ocppi/runtime/config/types/LinuxResources.hpp	2023-10-22 10:47:28.552355069 +0800
+--- libs/runtime/include.orig/ocppi/runtime/config/types/LinuxResources.hpp	2024-01-02 22:50:01.262079011 +0800
++++ libs/runtime/include/ocppi/runtime/config/types/LinuxResources.hpp	2024-01-02 22:50:16.206259174 +0800
 @@ -41,7 +41,7 @@
  std::optional<ResourcesNetwork> network;
  std::optional<Pids> pids;
@@ -76,8 +86,8 @@ diff -ruN libs/runtime/include.orig/ocppi/runtime/config/types/LinuxResources.hp
  }
  }
 diff -ruN libs/runtime/include.orig/ocppi/runtime/features/types/Features.hpp libs/runtime/include/ocppi/runtime/features/types/Features.hpp
---- libs/runtime/include.orig/ocppi/runtime/features/types/Features.hpp	2023-10-22 10:47:22.692355495 +0800
-+++ libs/runtime/include/ocppi/runtime/features/types/Features.hpp	2023-10-22 10:47:28.552355069 +0800
+--- libs/runtime/include.orig/ocppi/runtime/features/types/Features.hpp	2024-01-02 22:50:01.262079011 +0800
++++ libs/runtime/include/ocppi/runtime/features/types/Features.hpp	2024-01-02 22:50:16.746265682 +0800
 @@ -35,7 +35,7 @@
  struct Features {
  std::optional<std::map<std::string, nlohmann::json>> annotations;
@@ -88,8 +98,8 @@ diff -ruN libs/runtime/include.orig/ocppi/runtime/features/types/Features.hpp li
  std::string ociVersionMax;
  std::string ociVersionMin;
 diff -ruN libs/runtime/include.orig/ocppi/runtime/features/types/Generators.hpp libs/runtime/include/ocppi/runtime/features/types/Generators.hpp
---- libs/runtime/include.orig/ocppi/runtime/features/types/Generators.hpp	2023-10-22 10:47:22.692355495 +0800
-+++ libs/runtime/include/ocppi/runtime/features/types/Generators.hpp	2023-10-22 10:47:28.552355069 +0800
+--- libs/runtime/include.orig/ocppi/runtime/features/types/Generators.hpp	2024-01-02 22:50:01.262079011 +0800
++++ libs/runtime/include/ocppi/runtime/features/types/Generators.hpp	2024-01-02 22:50:16.750265731 +0800
 @@ -199,7 +199,7 @@
  inline void from_json(const json & j, Features& x) {
  x.annotations = get_stack_optional<std::map<std::string, nlohmann::json>>(j, "annotations");

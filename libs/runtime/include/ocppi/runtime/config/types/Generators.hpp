@@ -1457,7 +1457,7 @@ j["devices"] = x.devices;
 }
 
 inline void from_json(const json & j, Config& x) {
-x.annotations = get_stack_optional<std::map<std::string, nlohmann::json>>(j, "annotations");
+x.annotations = get_stack_optional<std::map<std::string, std::string>>(j, "annotations");
 x.domainname = get_stack_optional<std::string>(j, "domainname");
 x.hooks = get_stack_optional<Hooks>(j, "hooks");
 x.hostname = get_stack_optional<std::string>(j, "hostname");

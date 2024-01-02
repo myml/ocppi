@@ -41,7 +41,7 @@ using nlohmann::json;
 * Open Container Initiative Runtime Specification Container Configuration Schema
 */
 struct Config {
-std::optional<std::map<std::string, nlohmann::json>> annotations;
+std::optional<std::map<std::string, std::string>> annotations;
 std::optional<std::string> domainname;
 std::optional<Hooks> hooks;
 std::optional<std::string> hostname;
