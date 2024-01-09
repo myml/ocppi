@@ -59,7 +59,7 @@ auto doState(const std::string &bin,
                 args.splice(args.end(), opt.args());
         }
 
-        args.emplace_back("state");
+        args.push_front("state");
         args.push_back(id);
 
         SPDLOG_LOGGER_DEBUG(logger, "running {} with arguments: {}", bin, args);
@@ -105,7 +105,7 @@ void doCreate(const std::string &bin,
                 args.splice(args.end(), opt.args());
         }
 
-        args.emplace_back("create");
+        args.push_front("create");
         args.push_back(id);
 
         SPDLOG_LOGGER_DEBUG(logger, "running {} with arguments: {}", bin, args);
@@ -144,7 +144,7 @@ void doStart(const std::string &bin,
                 args.splice(args.end(), opt.args());
         }
 
-        args.emplace_back("start");
+        args.push_front("start");
         args.push_back(id);
 
         SPDLOG_LOGGER_DEBUG(logger, "running {} with arguments: {}", bin, args);
@@ -182,7 +182,7 @@ void doKill(const std::string &bin,
                 args.splice(args.end(), opt.args());
         }
 
-        args.emplace_back("kill");
+        args.push_front("kill");
         args.push_back(dynamic_cast<const std::string &>(id));
         args.push_back(dynamic_cast<const std::string &>(signal));
 
@@ -221,7 +221,7 @@ void doDelete(const std::string &bin,
                 args.splice(args.end(), opt.args());
         }
 
-        args.emplace_back("delete");
+        args.push_front("delete");
         args.push_back(id);
 
         SPDLOG_LOGGER_DEBUG(logger, "running {} with arguments: {}", bin, args);
@@ -259,7 +259,7 @@ void doExec(const std::string &bin,
                 args.splice(args.end(), opt.args());
         }
 
-        args.emplace_back("exec");
+        args.push_front("exec");
         args.push_back(id);
         args.push_back(executable);
         args.insert(args.end(), command.begin(), command.end());
