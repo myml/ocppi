@@ -7,7 +7,8 @@
 #include <vector>     // for vector
 
 #include "ocppi/cli/CLI.hpp" // for CLI
-#include "tl/expected.hpp"   // for expected
+#include "spdlog/spdlog.h"
+#include "tl/expected.hpp" // for expected
 
 namespace ocppi
 {
