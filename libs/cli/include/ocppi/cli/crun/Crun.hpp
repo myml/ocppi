@@ -8,6 +8,7 @@
 
 #include "ocppi/cli/CLI.hpp" // for CLI
 #include "tl/expected.hpp"   // for expected
+#include "spdlog/spdlog.h"
 
 namespace ocppi
 {
