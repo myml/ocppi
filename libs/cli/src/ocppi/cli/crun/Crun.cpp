@@ -20,9 +20,12 @@
 #include "ocppi/runtime/DeleteOption.hpp"   // for DeleteOption
 #include "ocppi/runtime/ExecOption.hpp"     // for ExecOption
 #include "ocppi/runtime/KillOption.hpp"     // for KillOption
+#include "ocppi/runtime/ListOption.hpp"     // for ListOption
 #include "ocppi/runtime/Signal.hpp"         // for Signal
 #include "ocppi/runtime/StartOption.hpp"    // for StartOption
 #include "ocppi/runtime/StateOption.hpp"    // for StateOption
+#include "ocppi/runtime/list/types/Generators.hpp"  // IWYU pragma: keep
+#include "ocppi/runtime/list/types/Item.hpp"        // for Item
 #include "ocppi/runtime/state/types/Generators.hpp" // IWYU pragma: keep
 #include "ocppi/runtime/state/types/State.hpp"      // for State
 #include "spdlog/spdlog.h"                          // for SPDLOG_LOGGER_DEBUG
@@ -282,6 +285,47 @@ auto Crun::exec(const runtime::ContainerID &id, const std::string &executable,
 try {
         doExec(this->bin(), this->logger(), id, executable, command, opts);
         return {};
+} catch (...) {
+        return tl::unexpected(std::current_exception());
+}
+
+namespace
+{
+
+tl::expected<std::list<runtime::list::types::Item>, std::exception_ptr>
+doList(const std::string &bin,
+       [[maybe_unused]] const std::shared_ptr<spdlog::logger> &logger,
+       const std::vector<runtime::ListOption> &opts)
+{
+        std::list<std::string> args;
+        for (auto &opt : opts) {
+                args.splice(args.end(), opt.args());
+        }
+
+        args.push_front("list");
+        args.push_back("-f");
+        args.push_back("json");
+        SPDLOG_LOGGER_DEBUG(logger, "running {} with arguments: {}", bin, args);
+
+        boost::process::ipstream out_ips;
+        auto ret = boost::process::system(bin,
+                                          boost::process::args(std::move(args)),
+                                          boost::process::std_out > out_ips);
+        if (ret) {
+                throw CommandFailedError(ret, bin);
+        }
+
+        auto j = nlohmann::json::parse(out_ips);
+        return j.get<std::list<runtime::list::types::Item>>();
+}
+
+}
+
+auto Crun::list(const std::vector<runtime::ListOption> &opts) noexcept
+        -> tl::expected<std::list<runtime::list::types::Item>,
+                        std::exception_ptr>
+try {
+        return doList(this->bin(), this->logger(), opts);
 } catch (...) {
         return tl::unexpected(std::current_exception());
 }

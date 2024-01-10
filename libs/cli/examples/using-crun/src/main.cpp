@@ -17,6 +17,7 @@
 #include "ocppi/cli/crun/Crun.hpp"                  // for Crun
 #include "ocppi/runtime/ContainerID.hpp"            // IWYU pragma: keep
 #include "ocppi/runtime/Signal.hpp"                 // IWYU pragma: keep
+#include "ocppi/runtime/list/types/Generators.hpp"  // IWYU pragma: keep
 #include "ocppi/runtime/state/types/Generators.hpp" // IWYU pragma: keep
 #include "spdlog/common.h"                          // for trace
 #include "spdlog/logger.h"                          // for logger
@@ -71,8 +72,18 @@ auto main() -> int
                 cli = std::move(crun.value());
         }
 
-        auto state = cli->state(
-                "c295070d57bf626199e95cdd80b121f69f3c0797bfc1bed5f270fb43f86ea64e");
+        auto list = cli->list();
+        if (!list.has_value()) {
+                printException("crun list", list.error());
+                return -1;
+        }
+
+        for (auto item : list.value()) {
+                nlohmann::json j = item;
+                std::cout << "exists container " << j.dump() << std::endl;
+        }
+
+        auto state = cli->state(list->front().id.c_str());
 
         if (!state.has_value()) {
                 printException("crun state", state.error());
@@ -82,9 +93,7 @@ auto main() -> int
         nlohmann::json j = state.value();
         std::cout << j.dump(1, '\t') << std::endl;
 
-        auto killResult = cli->kill(
-                "c295070d57bf626199e95cdd80b121f69f3c0797bfc1bed5f270fb43f86ea64e",
-                "SIGTERM");
+        auto killResult = cli->kill(list->front().id.c_str(), "SIGTERM");
 
         if (!killResult.has_value()) {
                 printException("crun kill", killResult.error());

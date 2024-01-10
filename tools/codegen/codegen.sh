@@ -124,6 +124,13 @@ generate \
 	"$include" \
 	"ocppi/runtime/features/types"
 
+generate \
+	"$repoRoot/libs/cli/schema/crun-list-item.json" \
+	Item \
+	"ocppi::runtime::list::types" \
+	"$include" \
+	"ocppi/runtime/list/types"
+
 PATCH_FILE=${PATCH_FILE:="$repoRoot"/tools/codegen/fix.patch}
 
 if [[ ! -f "$PATCH_FILE" ]]; then
