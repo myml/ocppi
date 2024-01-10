@@ -111,6 +111,9 @@ pfl_add_library(
   include/ocppi/runtime/state/types/Generators.hpp
   include/ocppi/runtime/state/types/State.hpp
   include/ocppi/runtime/state/types/Status.hpp
+  include/ocppi/runtime/list/types/Generators.hpp
+  include/ocppi/runtime/list/types/helper.hpp
+  include/ocppi/runtime/list/types/Item.hpp
   include/ocppi/runtime/ContainerID.hpp
   include/ocppi/runtime/CreateOption.hpp
   include/ocppi/runtime/DeleteOption.hpp

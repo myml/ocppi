@@ -7,8 +7,8 @@
 #include <vector>     // for vector
 
 #include "ocppi/cli/CLI.hpp" // for CLI
-#include "tl/expected.hpp"   // for expected
-#include "spdlog/spdlog.h"
+#include "spdlog/logger.h"
+#include "tl/expected.hpp" // for expected
 
 namespace ocppi
 {
@@ -22,6 +22,7 @@ class KillOption;
 class Signal;
 class StartOption;
 class StateOption;
+class ListOption;
 namespace state
 {
 namespace types
@@ -29,12 +30,16 @@ namespace types
 struct State;
 } // namespace types
 } // namespace state
+namespace list
+{
+namespace types
+{
+struct Item;
+}; // namespace types
+} // namespace list
+
 } // namespace runtime
 } // namespace ocppi
-namespace spdlog
-{
-class logger;
-} // namespace spdlog
 
 namespace ocppi::cli::crun
 {
@@ -83,6 +88,10 @@ class Crun final : public CLI {
                   const std::vector<std::string> &command,
                   const std::vector<runtime::ExecOption> &opts = {}) noexcept
                 -> tl::expected<void, std::exception_ptr> override;
-};
 
+        [[nodiscard]]
+        auto list(const std::vector<runtime::ListOption> &opts = {}) noexcept
+                -> tl::expected<std::list<runtime::list::types::Item>,
+                                std::exception_ptr> override;
+};
 }
