@@ -16,6 +16,7 @@ namespace runtime
 {
 class ContainerID;
 class CreateOption;
+class RunOption;
 class DeleteOption;
 class ExecOption;
 class KillOption;
@@ -65,6 +66,12 @@ class Crun final : public CLI {
         create(const runtime::ContainerID &id,
                const std::filesystem::path &pathToBundle,
                const std::vector<runtime::CreateOption> &opts = {}) noexcept
+                -> tl::expected<void, std::exception_ptr> override;
+
+        [[nodiscard]]
+        auto run(const runtime::ContainerID &id,
+                 const std::filesystem::path &pathToBundle,
+                 const std::vector<runtime::RunOption> &opts = {}) noexcept
                 -> tl::expected<void, std::exception_ptr> override;
 
         [[nodiscard]]

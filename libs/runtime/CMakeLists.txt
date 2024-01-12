@@ -11,6 +11,7 @@ pfl_add_library(
   src/ocppi/runtime/config/ConfigLoader.cpp
   src/ocppi/runtime/ContainerID.cpp
   src/ocppi/runtime/CreateOption.cpp
+  src/ocppi/runtime/RunOption.cpp
   src/ocppi/runtime/DeleteOption.cpp
   src/ocppi/runtime/Option.cpp
   src/ocppi/runtime/Signal.cpp
@@ -116,6 +117,7 @@ pfl_add_library(
   include/ocppi/runtime/list/types/Item.hpp
   include/ocppi/runtime/ContainerID.hpp
   include/ocppi/runtime/CreateOption.hpp
+  include/ocppi/runtime/RunOption.hpp
   include/ocppi/runtime/DeleteOption.hpp
   include/ocppi/runtime/KillOption.hpp
   include/ocppi/runtime/Option.hpp

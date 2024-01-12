@@ -21,9 +21,10 @@
 #include "ocppi/runtime/ExecOption.hpp"     // for ExecOption
 #include "ocppi/runtime/KillOption.hpp"     // for KillOption
 #include "ocppi/runtime/ListOption.hpp"     // for ListOption
-#include "ocppi/runtime/Signal.hpp"         // for Signal
-#include "ocppi/runtime/StartOption.hpp"    // for StartOption
-#include "ocppi/runtime/StateOption.hpp"    // for StateOption
+#include "ocppi/runtime/RunOption.hpp"
+#include "ocppi/runtime/Signal.hpp"                 // for Signal
+#include "ocppi/runtime/StartOption.hpp"            // for StartOption
+#include "ocppi/runtime/StateOption.hpp"            // for StateOption
 #include "ocppi/runtime/list/types/Generators.hpp"  // IWYU pragma: keep
 #include "ocppi/runtime/list/types/Item.hpp"        // for Item
 #include "ocppi/runtime/state/types/Generators.hpp" // IWYU pragma: keep
@@ -128,6 +129,49 @@ auto Crun::create(const runtime::ContainerID &id,
         -> tl::expected<void, std::exception_ptr>
 try {
         doCreate(this->bin(), this->logger(), id, pathToBundle, opts);
+        return {};
+} catch (...) {
+        return tl::unexpected(std::current_exception());
+}
+
+namespace
+{
+
+void doRun(const std::string &bin,
+           [[maybe_unused]] const std::shared_ptr<spdlog::logger> &logger,
+           const runtime::ContainerID &id,
+           const std::filesystem::path &pathToBundle,
+           const std::vector<runtime::RunOption> &opts)
+{
+        std::list<std::string> args{
+                "-b",
+                pathToBundle,
+        };
+
+        for (auto &opt : opts) {
+                args.splice(args.end(), opt.args());
+        }
+
+        args.push_front("run");
+        args.push_back(id);
+
+        SPDLOG_LOGGER_DEBUG(logger, "running {} with arguments: {}", bin, args);
+
+        auto ret = boost::process::system(
+                bin, boost::process::args(std::move(args)));
+        if (ret) {
+                throw CommandFailedError(ret, bin);
+        }
+}
+
+}
+
+auto Crun::run(const runtime::ContainerID &id,
+               const std::filesystem::path &pathToBundle,
+               const std::vector<runtime::RunOption> &opts) noexcept
+        -> tl::expected<void, std::exception_ptr>
+try {
+        doRun(this->bin(), this->logger(), id, pathToBundle, opts);
         return {};
 } catch (...) {
         return tl::unexpected(std::current_exception());
