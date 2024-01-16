@@ -4,6 +4,7 @@
 #include <string>    // for string
 #include <vector>    // for vector
 
+#include "ocppi/runtime/ContainerID.hpp"     // for ContainerID
 #include "ocppi/runtime/SpecRuntime.hpp"     // for SpecRuntime
 #include "ocppi/types/ContainerListItem.hpp" // for ContainerListItem
 #include "tl/expected.hpp"                   // for expected
@@ -12,7 +13,6 @@ namespace ocppi
 {
 namespace runtime
 {
-class ContainerID;
 class ExecOption;
 class ListOption;
 } // namespace runtime

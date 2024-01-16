@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "ocppi/runtime/ContainerID.hpp"
 #include "ocppi/runtime/CreateOption.hpp"
 #include "ocppi/runtime/DeleteOption.hpp"
 #include "ocppi/runtime/KillOption.hpp"
@@ -21,7 +22,6 @@ namespace state::types
 struct State;
 }
 
-class ContainerID;
 class Signal;
 
 class SpecRuntime {

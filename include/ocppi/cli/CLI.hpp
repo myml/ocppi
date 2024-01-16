@@ -1,37 +1,22 @@
 #pragma once
-
-#include <filesystem> // for path
-#include <memory>     // for shared_ptr
+#include <filesystem>
 
 #include "ocppi/runtime/Runtime.hpp" // for Runtime
-
-namespace spdlog
-{
-class logger;
-} // namespace spdlog
 
 namespace ocppi::cli
 {
 
 class CLI : public runtime::Runtime {
-    protected:
-        [[nodiscard]]
-        auto bin() const -> const std::filesystem::path &;
-        [[nodiscard]]
-        auto logger() const -> const std::shared_ptr<spdlog::logger> &;
-
-        CLI(std::filesystem::path, std::shared_ptr<spdlog::logger>);
-
     public:
+        CLI() = default;
         CLI(const CLI &) = delete;
         CLI(CLI &&) = delete;
         auto operator=(const CLI &) -> CLI & = delete;
         auto operator=(CLI &&) -> CLI & = delete;
         virtual ~CLI() = default;
 
-    private:
-        std::filesystem::path bin_;
-        std::shared_ptr<spdlog::logger> logger_;
+        [[nodiscard]]
+        virtual auto bin() const noexcept -> const std::filesystem::path & = 0;
 };
 
 }

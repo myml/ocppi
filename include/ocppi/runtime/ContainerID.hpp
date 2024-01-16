@@ -5,8 +5,6 @@
 namespace ocppi::runtime
 {
 
-class ContainerID : public std::string {
-        using std::string::string;
-};
+using ContainerID = std::string;
 
 }

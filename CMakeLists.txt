@@ -112,8 +112,8 @@ pfl_add_library(
   include/ocppi/runtime/configure.hpp.in
   SOURCES
   src/ocppi/InvalidArgumentError.cpp
-  src/ocppi/cli/CLI.cpp
   src/ocppi/cli/CommandFailedError.cpp
+  src/ocppi/cli/CommonCLI.cpp
   src/ocppi/cli/crun/Crun.cpp
   src/ocppi/cli/runc/Runc.cpp
   src/ocppi/cli/youki/Youki.cpp
@@ -132,8 +132,8 @@ pfl_add_library(
   src/ocppi/runtime/semver_range.hpp
   HEADERS
   include/ocppi/InvalidArgumentError.hpp
-  include/ocppi/cli/CLI.hpp
   include/ocppi/cli/CommandFailedError.hpp
+  include/ocppi/cli/CommonCLI.hpp
   include/ocppi/cli/crun/Crun.hpp
   include/ocppi/cli/runc/Runc.hpp
   include/ocppi/cli/youki/Youki.hpp

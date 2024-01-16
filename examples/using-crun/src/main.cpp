@@ -7,7 +7,7 @@
 #include <iostream>    // for basic_ostream, operator<<
 #include <map>         // for operator!=, operator==
 #include <memory>      // for shared_ptr, make_shared
-#include <string>      // for char_traits, basic_string
+#include <string>      // for char_traits, operator<<
 #include <string_view> // for operator<<, string_view
 #include <utility>     // for move
 #include <vector>      // for vector
@@ -18,7 +18,6 @@
 #include "nlohmann/json_fwd.hpp"                    // for json
 #include "ocppi/cli/CLI.hpp"                        // for CLI
 #include "ocppi/cli/crun/Crun.hpp"                  // for Crun
-#include "ocppi/runtime/ContainerID.hpp"            // for ContainerID
 #include "ocppi/runtime/Signal.hpp"                 // for Signal
 #include "ocppi/runtime/state/types/Generators.hpp" // IWYU pragma: keep
 #include "ocppi/types/ContainerListItem.hpp"        // for ContainerListItem
@@ -50,7 +49,6 @@ try {
 auto main() -> int
 {
         std::shared_ptr<spdlog::logger> logger;
-
         {
                 auto sinks = std::vector<std::shared_ptr<spdlog::sinks::sink>>(
                         { std::make_shared<spdlog::sinks::systemd_sink_mt>(
@@ -77,6 +75,10 @@ auto main() -> int
                 cli = std::move(crun.value());
         }
 
+        auto bin = cli->bin();
+        std::cerr << "Using OCI runtime CLI program \"" << bin.string() << "\""
+                  << std::endl;
+
         auto list = cli->list();
         if (!list.has_value()) {
                 printException("crun list", list.error());
@@ -93,7 +95,7 @@ auto main() -> int
                 std::cerr << "exists container " << j.dump() << std::endl;
         }
 
-        auto state = cli->state(list->front().id.c_str());
+        auto state = cli->state(list->front().id);
 
         if (!state.has_value()) {
                 printException("crun state", state.error());
@@ -103,7 +105,7 @@ auto main() -> int
         nlohmann::json j = state.value();
         std::cout << j.dump(1, '\t') << std::endl;
 
-        auto killResult = cli->kill(list->front().id.c_str(), "SIGTERM");
+        auto killResult = cli->kill(list->front().id, "SIGTERM");
 
         if (!killResult.has_value()) {
                 printException("crun kill", killResult.error());
