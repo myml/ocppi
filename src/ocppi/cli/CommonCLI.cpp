@@ -103,7 +103,7 @@ CommonCLI::CommonCLI(std::filesystem::path bin,
         : bin_(std::move(bin))
         , logger_(std::move(logger))
 {
-        if (std::filesystem::exists(this->bin())) {
+        if (std::filesystem::exists(bin_)) {
                 return;
         }
         throw std::system_error(ENOENT, std::generic_category());
