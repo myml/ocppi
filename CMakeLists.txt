@@ -20,8 +20,7 @@ include(./cmake/CPM.cmake)
 
 CPMFindPackage(
   NAME expected
-  VERSION 1.0.0 # NOTE: This project seems forget to update version in cmake
-                # when release 1.1.0.
+  VERSION 1.0.0
   GITHUB_REPOSITORY TartanLlama/expected
   GIT_TAG v1.1.0
   GIT_SHALLOW ON
@@ -77,8 +76,10 @@ CPMFindPackage(
   GIT_TAG "v1.13.0"
   GIT_SHALLOW ON
   EXCLUDE_FROM_ALL ON
-  # NOTE: https://github.com/gabime/spdlog/issues/1190
-  OPTIONS "CMAKE_POSITION_INDEPENDENT_CODE ON" "SPDLOG_FMT_EXTERNAL ON")
+  OPTIONS
+    "CMAKE_POSITION_INDEPENDENT_CODE ON" # NOTE:
+                                         # https://github.com/gabime/spdlog/issues/1190
+    "SPDLOG_FMT_EXTERNAL ON")
 
 include(./cmake/GitSemver.cmake)
 
