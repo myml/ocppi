@@ -1,9 +1,0 @@
-@PACKAGE_INIT@
-
-list (APPEND CMAKE_MODULE_PATH "@PACKAGE_cmakeModulesDir@")
-
-include (CMakeFindDependencyMacro)
-
-find_dependency(tl-expected 1.0.0)
-
-include (${CMAKE_CURRENT_LIST_DIR}/ocppi__common.cmake)

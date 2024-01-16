@@ -8,7 +8,7 @@ GIT=${GIT:="git"}
 repoRoot="$("$GIT" rev-parse --show-toplevel)"
 cd "$repoRoot"/tools/codegen || exit 255
 
-include="$repoRoot/libs/runtime/include"
+include="$repoRoot/include"
 origin="$include.orig"
 
 [ -f "$origin" ] && chmod -R u+w "$origin"

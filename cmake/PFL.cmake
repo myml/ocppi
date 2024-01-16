@@ -26,7 +26,7 @@ function(pfl_init)
   cmake_parse_arguments(PFL_INIT "" "INSTALL;ENABLE_TESTING;BUILD_EXAMPLES"
                         "EXTERNALS" ${ARGN})
 
-  message(STATUS "PFL: --==Version: v0.2.4==--")
+  message(STATUS "PFL: --==Version: v0.2.6==--")
 
   set(PFL_ENABLE_TESTING
       ${PFL_INIT_ENABLE_TESTING}
@@ -50,10 +50,10 @@ function(__pfl_configure_files)
 
     configure_file(${IN_FILE} ${CMAKE_CURRENT_BINARY_DIR}/${OUT_FILE} @ONLY)
 
-    if(OUT_FILE MATCHES "^include\/.*\.h(h|pp)?$")
+    if(OUT_FILE MATCHES "^(./)?include\/.*\.h(h|pp)?$")
       list(APPEND ${PFL_CONFIGURE_FILES_HEADERS}
            ${CMAKE_CURRENT_BINARY_DIR}/${OUT_FILE})
-    elseif(OUT_FILE MATCHES "^src\/.*\.(h(h|pp)?|cpp)$")
+    elseif(OUT_FILE MATCHES "^(./)?src\/.*\.(h(h|pp)?|cpp)$")
       list(APPEND ${PFL_CONFIGURE_FILES_SOURCES}
            ${CMAKE_CURRENT_BINARY_DIR}/${OUT_FILE})
     else()
@@ -166,6 +166,11 @@ function(pfl_add_library)
 
   cmake_path(GET CMAKE_CURRENT_SOURCE_DIR FILENAME TARGET_DIR_NAME)
 
+  if(TARGET_DIR_NAME MATCHES ".*__.*")
+    message(
+      FATAL_ERROR "Invalid directory name ${TARGET_DIR_NAME} contains '__'.")
+  endif()
+
   if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
     set(TARGET_DIR_NAME ${PROJECT_NAME})
   endif()
@@ -176,13 +181,14 @@ function(pfl_add_library)
 
   if(TARGET_PREFIX)
     set(TARGET_NAME "${TARGET_PREFIX}__${TARGET_NAME}")
+    string(REPLACE "__" "::" TARGET_EXPORT_NAME "${TARGET_NAME}")
+  else()
+    set(TARGET_EXPORT_NAME "${TARGET_DIR_NAME}::${TARGET_NAME}")
   endif()
-
-  string(REPLACE "__" "::" TARGET_EXPORT_NAME "${TARGET_NAME}")
 
   message(
     STATUS
-      "PFL:${PFL_MESSAGE_INDENT} Adding library ${TARGET_EXPORT_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}"
+      "PFL:${PFL_MESSAGE_INDENT} Adding library ${TARGET_NAME} as ${TARGET_EXPORT_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}"
   )
   set(PFL_MESSAGE_INDENT "${PFL_MESSAGE_INDENT}  ")
 

@@ -1,0 +1,46 @@
+{
+        "description": "Container list item, compatible wity crun.",
+        "$schema": "http://json-schema.org/draft-04/schema#",
+        "$defs": {
+                "ContainerListItem": {
+                        "type": "object",
+                        "properties": {
+                                "id": {
+                                        "type": "string"
+                                },
+                                "pid": {
+                                        "type": "integer"
+                                },
+                                "status": {
+                                        "type": "string"
+                                },
+                                "bundle": {
+                                        "type": "string"
+                                },
+                                "created": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                },
+                                "owner": {
+                                        "type": "string"
+                                }
+                        },
+                        "required": [
+                                "id",
+                                "pid",
+                                "status",
+                                "bundle",
+                                "created",
+                                "owner"
+                        ],
+                        "additionalProperties": false
+                }
+        },
+        "type": "object",
+        "properties": {
+                "containerListItem": {
+                        "$ref": "#/$defs/ContainerListItem"
+                }
+        },
+        "additionalProperties": false
+}

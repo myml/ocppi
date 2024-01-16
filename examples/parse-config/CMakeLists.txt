@@ -1,0 +1,10 @@
+pfl_add_executable(
+  INTERNAL
+  SOURCES
+  ./src/main.cpp
+  COMPILE_FEATURES
+  PUBLIC
+  cxx_std_17
+  LINK_LIBRARIES
+  PUBLIC
+  ocppi::ocppi)

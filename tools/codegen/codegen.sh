@@ -101,43 +101,46 @@ generate() {
 	} >>"$filename"
 }
 
-include="libs/runtime/include"
+# Generate types from OCI runtime specification.
 
 generate \
 	"$repoRoot/runtime-spec/schema/config-schema.json" \
 	Config \
 	"ocppi::runtime::config::types" \
-	"$include" \
+	"include" \
 	"ocppi/runtime/config/types"
 
 generate \
 	"$repoRoot/runtime-spec/schema/state-schema.json" \
 	State \
 	"ocppi::runtime::state::types" \
-	"$include" \
+	"include" \
 	"ocppi/runtime/state/types"
 
 generate \
 	"$repoRoot/runtime-spec/schema/features-schema.json" \
 	Features \
 	"ocppi::runtime::features::types" \
-	"$include" \
+	"include" \
 	"ocppi/runtime/features/types"
 
+# Generate types from ocppi API json schemas.
+
 generate \
-	"$repoRoot/libs/cli/schema/crun-list-item.json" \
-	Item \
-	"ocppi::runtime::list::types" \
-	"$include" \
-	"ocppi/runtime/list/types"
+	"$repoRoot/api/schema/ocppi-types-schema.json" \
+	types \
+	"ocppi::types" \
+	"include" \
+	"ocppi/types"
 
 PATCH_FILE=${PATCH_FILE:="$repoRoot"/tools/codegen/fix.patch}
-
 if [[ ! -f "$PATCH_FILE" ]]; then
+        echo "No patch file found at $PATCH_FILE"
 	exit
 fi
 
-cd "$repoRoot"
+pushd "$repoRoot"
 cp -r "$repoRoot/$include" "$repoRoot/$include.orig"
 patch -s -p0 <"$PATCH_FILE"
 rm -r "$repoRoot/$include.orig"
+popd
