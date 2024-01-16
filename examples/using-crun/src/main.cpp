@@ -85,9 +85,14 @@ auto main() -> int
                 return -1;
         }
 
+        if (list->empty()) {
+                std::cerr << "No container exists." << std::endl;
+                return 0;
+        }
+
         for (auto item : list.value()) {
                 nlohmann::json j = item;
-                std::cout << "exists container " << j.dump() << std::endl;
+                std::cerr << "exists container " << j.dump() << std::endl;
         }
 
         auto state = cli->state(list->front().id.c_str());
