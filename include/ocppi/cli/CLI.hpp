@@ -6,7 +6,7 @@
 namespace ocppi::cli
 {
 
-class CLI : public runtime::Runtime {
+class CLI : public virtual runtime::Runtime {
     public:
         CLI() = default;
         CLI(const CLI &) = delete;

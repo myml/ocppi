@@ -9,6 +9,5 @@ pfl_add_executable(
   LINK_LIBRARIES
   PUBLIC
   ocppi::ocppi
-  PRIVATE
   PkgConfig::systemd
   spdlog::spdlog)

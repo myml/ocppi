@@ -3,13 +3,12 @@
 #include <algorithm>   // for max
 #include <cstdio>      // for stderr
 #include <exception>   // for exception_ptr, exception
-#include <filesystem>  // for path
-#include <iostream>    // for basic_ostream, operat...
+#include <iostream>    // for basic_ostream, endl
 #include <map>         // for operator!=, operator==
 #include <memory>      // for shared_ptr, unique_ptr
 #include <mutex>       // for mutex
 #include <string>      // for char_traits, operator<<
-#include <string_view> // for operator<<, string_view
+#include <string_view> // for string_view
 #include <utility>     // for move
 #include <vector>      // for vector
 
@@ -29,6 +28,7 @@
 #include "spdlog/sinks/ansicolor_sink.h"     // for ansicolor_stderr_sink
 #include "spdlog/sinks/stdout_color_sinks.h" // for stderr_color_sink_mt
 #include "spdlog/sinks/systemd_sink.h"       // for systemd_sink_mt, syst...
+#include "spdlog/spdlog.h"                   // for SPDLOG_LOGGER_ERROR
 #include "tl/expected.hpp"                   // for expected
 
 namespace spdlog
@@ -39,13 +39,14 @@ class sink;
 } // namespace sinks
 } // namespace spdlog
 
-void printException(std::string_view msg, std::exception_ptr ptr) noexcept
+void printException(const std::unique_ptr<spdlog::logger> &logger,
+                    std::string_view msg, std::exception_ptr ptr) noexcept
 try {
         std::rethrow_exception(ptr);
 } catch (const std::exception &e) {
-        std::cerr << msg << ": " << e.what() << std::endl;
+        SPDLOG_LOGGER_ERROR(logger, "{}: {}", msg, e.what());
 } catch (...) {
-        std::cerr << msg << ": unknown exception" << std::endl;
+        SPDLOG_LOGGER_ERROR(logger, "{}: unknown exception", msg);
 }
 
 auto main() -> int
@@ -66,52 +67,66 @@ auto main() -> int
                 logger->set_level(spdlog::level::trace);
         }
 
-        std::unique_ptr<ocppi::cli::CLI> cli;
-        {
-                auto crun =
-                        ocppi::cli::crun::Crun::New("/usr/bin/crun", logger);
-                if (!crun.has_value()) {
-                        printException("new crun", crun.error());
+        try {
+                std::unique_ptr<ocppi::cli::CLI> cli;
+                {
+                        auto crun = ocppi::cli::crun::Crun::New("/usr/bin/crun",
+                                                                logger);
+                        if (!crun.has_value()) {
+                                printException(logger, "New crun object failed",
+                                               crun.error());
+                                return -1;
+                        }
+                        cli = std::move(crun.value());
+                }
+
+                auto bin = cli->bin();
+                SPDLOG_LOGGER_DEBUG(logger,
+                                    R"(Using OCI runtime CLI program "{}")",
+                                    bin.string());
+
+                auto list = cli->list();
+                if (!list.has_value()) {
+                        printException(logger, "Run crun list failed",
+                                       list.error());
                         return -1;
                 }
-                cli = std::move(crun.value());
-        }
 
-        auto bin = cli->bin();
-        std::cerr << "Using OCI runtime CLI program \"" << bin.string() << "\""
-                  << std::endl;
+                if (list->empty()) {
+                        SPDLOG_LOGGER_ERROR(logger, "No container exists.");
+                        return 0;
+                }
 
-        auto list = cli->list();
-        if (!list.has_value()) {
-                printException("crun list", list.error());
-                return -1;
-        }
+                for (auto item : list.value()) {
+                        nlohmann::json j = item;
+                        SPDLOG_LOGGER_INFO(logger, "Existing container {}",
+                                           j.dump());
+                }
 
-        if (list->empty()) {
-                std::cerr << "No container exists." << std::endl;
+                auto state = cli->state(list->front().id);
+
+                if (!state.has_value()) {
+                        printException(logger, "Run crun state failed",
+                                       state.error());
+                        return -1;
+                }
+
+                nlohmann::json j = state.value();
+                std::cout << j.dump(1, '\t') << std::endl;
+
+                auto killResult = cli->kill(list->front().id,
+                                            ocppi::runtime::Signal("SIGTERM"));
+
+                if (!killResult.has_value()) {
+                        printException(logger, "Run crun kill failed",
+                                       killResult.error());
+                        return -1;
+                }
+
                 return 0;
-        }
-
-        for (auto item : list.value()) {
-                nlohmann::json j = item;
-                std::cerr << "exists container " << j.dump() << std::endl;
-        }
-
-        auto state = cli->state(list->front().id);
-
-        if (!state.has_value()) {
-                printException("crun state", state.error());
-                return -1;
-        }
-
-        nlohmann::json j = state.value();
-        std::cout << j.dump(1, '\t') << std::endl;
-
-        auto killResult =
-                cli->kill(list->front().id, ocppi::runtime::Signal("SIGTERM"));
-
-        if (!killResult.has_value()) {
-                printException("crun kill", killResult.error());
+        } catch (...) {
+                printException(logger, "Failed to kill first crun container",
+                               std::current_exception());
                 return -1;
         }
 

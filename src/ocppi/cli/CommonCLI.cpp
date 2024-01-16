@@ -76,7 +76,7 @@ auto doCommand(const std::string &bin,
                                  std::make_move_iterator(args.end()));
         }
 
-        SPDLOG_LOGGER_DEBUG(logger, "running {} with arguments: {}", bin,
+        SPDLOG_LOGGER_DEBUG(logger, R"(Executing "{}" with arguments: {})", bin,
                             arguments);
 
         boost::process::ipstream out_ips;

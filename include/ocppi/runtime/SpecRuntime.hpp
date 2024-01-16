@@ -31,6 +31,7 @@ class SpecRuntime {
         SpecRuntime(SpecRuntime &&) = delete;
         auto operator=(const SpecRuntime &) -> SpecRuntime & = delete;
         auto operator=(SpecRuntime &&) -> SpecRuntime & = delete;
+        virtual ~SpecRuntime() = default;
 
         [[nodiscard]]
         virtual auto state(const ContainerID &id) const noexcept

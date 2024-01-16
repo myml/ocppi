@@ -1,15 +1,48 @@
+#include <unistd.h> // for isatty
+
 #include <iostream> // for basic_ostream, cout
 #include <map>      // for operator==, operator!=
 #include <string>   // for char_traits, operat...
 
-#include <nlohmann/json.hpp>                     // for basic_json, operator<<
-#include <nlohmann/json_fwd.hpp>                 // for json
-#include <ocppi/runtime/config/types/Config.hpp> // for Config
-#include <ocppi/runtime/config/types/Generators.hpp> // IWYU pragma: keep
+#include "nlohmann/json.hpp"                     // for basic_json, operator<<
+#include "nlohmann/json_fwd.hpp"                 // for json
+#include "ocppi/runtime/config/types/Config.hpp" // for Config
+#include "ocppi/runtime/config/types/Generators.hpp" // IWYU pragma: keep
+#include "spdlog/logger.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/sinks/systemd_sink.h"
+#include "spdlog/spdlog.h"
+
+void printException(const std::unique_ptr<spdlog::logger> &logger,
+                    std::string_view msg, std::exception_ptr ptr) noexcept
+try {
+        std::rethrow_exception(ptr);
+} catch (const std::exception &e) {
+        SPDLOG_LOGGER_ERROR(logger, "{}: {}", msg, e.what());
+} catch (...) {
+        SPDLOG_LOGGER_ERROR(logger, "{}: unknown exception", msg);
+}
 
 int main()
 {
-        auto j = nlohmann::json::parse(R"(
+        std::unique_ptr<spdlog::logger> logger;
+        {
+                auto sinks = std::vector<std::shared_ptr<spdlog::sinks::sink>>(
+                        { std::make_shared<spdlog::sinks::systemd_sink_mt>(
+                                "ocppi") });
+                if (isatty(stderr->_fileno)) {
+                        sinks.push_back(std::make_shared<
+                                        spdlog::sinks::stderr_color_sink_mt>());
+                }
+
+                logger = std::make_unique<spdlog::logger>(
+                        "ocppi", sinks.begin(), sinks.end());
+
+                logger->set_level(spdlog::level::trace);
+        }
+
+        try {
+                auto j = nlohmann::json::parse(R"(
 {
     "ociVersion": "1.0.1",
     "process": {
@@ -401,11 +434,19 @@ int main()
     }
 })");
 
-        ocppi::runtime::config::types::Config cfg =
-                j.get<ocppi::runtime::config::types::Config>();
+                ocppi::runtime::config::types::Config cfg =
+                        j.get<ocppi::runtime::config::types::Config>();
 
-        std::cout << cfg.ociVersion << std::endl;
-        std::cout << nlohmann::json(cfg) << std::endl;
+                SPDLOG_LOGGER_INFO(logger, "OCI runtime config version: {}",
+                                   cfg.ociVersion);
+
+                SPDLOG_LOGGER_INFO(logger, "Parsed OCI runtime config: {}",
+                                   nlohmann::json(cfg).dump());
+        } catch (...) {
+                printException(logger, "Parse OCI runtime config failed",
+                               std::current_exception());
+                return -1;
+        }
 
         return 0;
 }

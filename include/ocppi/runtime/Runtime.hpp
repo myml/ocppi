@@ -26,8 +26,15 @@ class ListOption;
 namespace ocppi::runtime
 {
 
-class Runtime : public SpecRuntime {
+class Runtime : public virtual SpecRuntime {
     public:
+        Runtime() = default;
+        Runtime(const Runtime &) = delete;
+        Runtime(Runtime &&) = delete;
+        Runtime &operator=(const Runtime &) = delete;
+        Runtime &operator=(Runtime &&) = delete;
+        virtual ~Runtime() = default;
+
         [[nodiscard]]
         virtual auto exec(const ContainerID &id, const std::string &executable,
                           const std::vector<std::string> &command) noexcept

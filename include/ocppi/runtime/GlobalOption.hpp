@@ -9,13 +9,13 @@
 #include "ocppi/runtime/StateOption.hpp"
 namespace ocppi::runtime
 {
-class GlobalOption : public CreateOption,
-                     public DeleteOption,
-                     public ExecOption,
-                     public KillOption,
-                     public ListOption,
-                     public StartOption,
-                     public StateOption {
+class GlobalOption : public virtual CreateOption,
+                     public virtual DeleteOption,
+                     public virtual ExecOption,
+                     public virtual KillOption,
+                     public virtual ListOption,
+                     public virtual StartOption,
+                     public virtual StateOption {
     public:
         GlobalOption() = default;
         GlobalOption(const GlobalOption &) = delete;
