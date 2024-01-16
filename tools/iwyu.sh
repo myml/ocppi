@@ -54,5 +54,5 @@ CLANG_FORMAT=${CLANG_FORMAT:=$({
 	echo "clang-format"
 })}
 
-find . -regex '.*\.\(cpp\|hpp\|cc\|cxx\|h\)' \
+find . -regex '.*\.\(cpp\|hpp\|cc\|cxx\|h\)' -not -path "./tools/*" \
 	-exec "$CLANG_FORMAT" -style=file -i {} \;

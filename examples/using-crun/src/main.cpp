@@ -5,7 +5,6 @@
 #include <exception>   // for exception_ptr, exception
 #include <filesystem>  // for path
 #include <iostream>    // for basic_ostream, operator<<
-#include <list>        // for list, operator!=, _List...
 #include <map>         // for operator!=, operator==
 #include <memory>      // for shared_ptr, make_shared
 #include <string>      // for char_traits, basic_string
@@ -20,7 +19,6 @@
 #include "ocppi/cli/CLI.hpp"                        // for CLI
 #include "ocppi/cli/crun/Crun.hpp"                  // for Crun
 #include "ocppi/runtime/ContainerID.hpp"            // for ContainerID
-#include "ocppi/runtime/ListOption.hpp"             // IWYU pragma: keep
 #include "ocppi/runtime/Signal.hpp"                 // for Signal
 #include "ocppi/runtime/state/types/Generators.hpp" // IWYU pragma: keep
 #include "ocppi/types/ContainerListItem.hpp"        // for ContainerListItem

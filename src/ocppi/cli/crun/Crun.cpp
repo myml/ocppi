@@ -80,6 +80,12 @@ auto doState(const std::string &bin,
 
 }
 
+auto Crun::state(const runtime::ContainerID &id) const noexcept
+        -> tl::expected<runtime::state::types::State, std::exception_ptr>
+{
+        return this->state(id, {});
+}
+
 auto Crun::state(const runtime::ContainerID &id,
                  const std::vector<runtime::StateOption> &opts) const noexcept
         -> tl::expected<runtime::state::types::State, std::exception_ptr>
@@ -122,6 +128,13 @@ void doCreate(const std::string &bin,
 }
 
 auto Crun::create(const runtime::ContainerID &id,
+                  const std::filesystem::path &pathToBundle) noexcept
+        -> tl::expected<void, std::exception_ptr>
+{
+        return this->create(id, pathToBundle, {});
+}
+
+auto Crun::create(const runtime::ContainerID &id,
                   const std::filesystem::path &pathToBundle,
                   const std::vector<runtime::CreateOption> &opts) noexcept
         -> tl::expected<void, std::exception_ptr>
@@ -158,6 +171,12 @@ void doStart(const std::string &bin,
         }
 }
 
+}
+
+auto Crun::start(const runtime::ContainerID &id) noexcept
+        -> tl::expected<void, std::exception_ptr>
+{
+        return this->start(id, {});
 }
 
 auto Crun::start(const runtime::ContainerID &id,
@@ -199,6 +218,13 @@ void doKill(const std::string &bin,
 
 }
 
+auto Crun::kill(const runtime::ContainerID &id,
+                const runtime::Signal &signal) noexcept
+        -> tl::expected<void, std::exception_ptr>
+{
+        return this->kill(id, signal, {});
+}
+
 auto Crun::kill(const runtime::ContainerID &id, const runtime::Signal &signal,
                 const std::vector<runtime::KillOption> &opts) noexcept
         -> tl::expected<void, std::exception_ptr>
@@ -235,6 +261,12 @@ void doDelete(const std::string &bin,
         }
 }
 
+}
+
+auto Crun::delete_(const runtime::ContainerID &id) noexcept
+        -> tl::expected<void, std::exception_ptr>
+{
+        return this->delete_(id, {});
 }
 
 auto Crun::delete_(const runtime::ContainerID &id,
@@ -278,6 +310,13 @@ void doExec(const std::string &bin,
 }
 
 auto Crun::exec(const runtime::ContainerID &id, const std::string &executable,
+                const std::vector<std::string> &command) noexcept
+        -> tl::expected<void, std::exception_ptr>
+{
+        return this->exec(id, executable, command, {});
+}
+
+auto Crun::exec(const runtime::ContainerID &id, const std::string &executable,
                 const std::vector<std::string> &command,
                 const std::vector<runtime::ExecOption> &opts) noexcept
         -> tl::expected<void, std::exception_ptr>
@@ -291,7 +330,7 @@ try {
 namespace
 {
 
-tl::expected<std::list<types::ContainerListItem>, std::exception_ptr>
+tl::expected<std::vector<types::ContainerListItem>, std::exception_ptr>
 doList(const std::string &bin,
        [[maybe_unused]] const std::shared_ptr<spdlog::logger> &logger,
        const std::vector<runtime::ListOption> &opts)
@@ -315,13 +354,21 @@ doList(const std::string &bin,
         }
 
         auto j = nlohmann::json::parse(out_ips);
-        return j.get<std::list<types::ContainerListItem>>();
+        return j.get<std::vector<types::ContainerListItem>>();
 }
 
+}
+
+auto Crun::list() noexcept
+        -> tl::expected<std::vector<types::ContainerListItem>,
+                        std::exception_ptr>
+{
+        return this->list({});
 }
 
 auto Crun::list(const std::vector<runtime::ListOption> &opts) noexcept
-        -> tl::expected<std::list<types::ContainerListItem>, std::exception_ptr>
+        -> tl::expected<std::vector<types::ContainerListItem>,
+                        std::exception_ptr>
 try {
         return doList(this->bin(), this->logger(), opts);
 } catch (...) {

@@ -2,7 +2,6 @@
 
 #include <exception>  // for exception_ptr
 #include <filesystem> // for path
-#include <list>       // for list
 #include <memory>     // for make_shared, shared_ptr
 #include <string>     // for string
 #include <vector>     // for vector
@@ -54,44 +53,67 @@ class Crun final : public CLI {
                 -> tl::expected<std::unique_ptr<Crun>, std::exception_ptr>;
 
         [[nodiscard]]
-        auto
-        state(const runtime::ContainerID &id,
-              const std::vector<runtime::StateOption> &opts = {}) const noexcept
+        auto state(const runtime::ContainerID &id) const noexcept
+                -> tl::expected<runtime::state::types::State,
+                                std::exception_ptr> override;
+        [[nodiscard]]
+        auto state(const runtime::ContainerID &id,
+                   const std::vector<runtime::StateOption> &opts) const noexcept
                 -> tl::expected<runtime::state::types::State,
                                 std::exception_ptr> override;
 
         [[nodiscard]]
-        auto
-        create(const runtime::ContainerID &id,
-               const std::filesystem::path &pathToBundle,
-               const std::vector<runtime::CreateOption> &opts = {}) noexcept
+        auto create(const runtime::ContainerID &id,
+                    const std::filesystem::path &pathToBundle) noexcept
+                -> tl::expected<void, std::exception_ptr> override;
+        [[nodiscard]]
+        auto create(const runtime::ContainerID &id,
+                    const std::filesystem::path &pathToBundle,
+                    const std::vector<runtime::CreateOption> &opts) noexcept
                 -> tl::expected<void, std::exception_ptr> override;
 
+        [[nodiscard]]
+        auto start(const runtime::ContainerID &id) noexcept
+                -> tl::expected<void, std::exception_ptr> override;
         [[nodiscard]]
         auto start(const runtime::ContainerID &id,
-                   const std::vector<runtime::StartOption> &opts = {}) noexcept
+                   const std::vector<runtime::StartOption> &opts) noexcept
                 -> tl::expected<void, std::exception_ptr> override;
 
+        [[nodiscard]]
+        auto kill(const runtime::ContainerID &id,
+                  const runtime::Signal &signal) noexcept
+                -> tl::expected<void, std::exception_ptr> override;
         [[nodiscard]]
         auto kill(const runtime::ContainerID &id, const runtime::Signal &signal,
-                  const std::vector<runtime::KillOption> &opts = {}) noexcept
+                  const std::vector<runtime::KillOption> &opts) noexcept
                 -> tl::expected<void, std::exception_ptr> override;
 
         [[nodiscard]]
-        auto
-        delete_(const runtime::ContainerID &id,
-                const std::vector<runtime::DeleteOption> &opts = {}) noexcept
+        auto delete_(const runtime::ContainerID &id) noexcept
+                -> tl::expected<void, std::exception_ptr> override;
+        [[nodiscard]]
+        auto delete_(const runtime::ContainerID &id,
+                     const std::vector<runtime::DeleteOption> &opts) noexcept
                 -> tl::expected<void, std::exception_ptr> override;
 
         [[nodiscard]]
         auto exec(const runtime::ContainerID &id, const std::string &executable,
+                  const std::vector<std::string> &command) noexcept
+                -> tl::expected<void, std::exception_ptr> override;
+        [[nodiscard]]
+        auto exec(const runtime::ContainerID &id, const std::string &executable,
                   const std::vector<std::string> &command,
-                  const std::vector<runtime::ExecOption> &opts = {}) noexcept
+                  const std::vector<runtime::ExecOption> &opts) noexcept
                 -> tl::expected<void, std::exception_ptr> override;
 
         [[nodiscard]]
-        auto list(const std::vector<runtime::ListOption> &opts = {}) noexcept
-                -> tl::expected<std::list<types::ContainerListItem>,
+        auto list() noexcept
+                -> tl::expected<std::vector<types::ContainerListItem>,
+                                std::exception_ptr> override;
+        [[nodiscard]]
+        auto list(const std::vector<runtime::ListOption> &opts) noexcept
+                -> tl::expected<std::vector<types::ContainerListItem>,
                                 std::exception_ptr> override;
 };
 }

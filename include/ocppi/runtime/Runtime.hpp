@@ -1,7 +1,6 @@
 #pragma once
 
 #include <exception> // for exception_ptr
-#include <list>      // for list
 #include <string>    // for string
 #include <vector>    // for vector
 
@@ -26,12 +25,21 @@ class Runtime : public SpecRuntime {
     public:
         [[nodiscard]]
         virtual auto exec(const ContainerID &id, const std::string &executable,
-                          const std::vector<std::string> &command,
-                          const std::vector<ExecOption> &opts = {}) noexcept
+                          const std::vector<std::string> &command) noexcept
                 -> tl::expected<void, std::exception_ptr> = 0;
         [[nodiscard]]
-        virtual auto list(const std::vector<ListOption> &opts = {}) noexcept
-                -> tl::expected<std::list<types::ContainerListItem>,
+        virtual auto exec(const ContainerID &id, const std::string &executable,
+                          const std::vector<std::string> &command,
+                          const std::vector<ExecOption> &opts) noexcept
+                -> tl::expected<void, std::exception_ptr> = 0;
+
+        [[nodiscard]]
+        virtual auto list() noexcept
+                -> tl::expected<std::vector<types::ContainerListItem>,
+                                std::exception_ptr> = 0;
+        [[nodiscard]]
+        virtual auto list(const std::vector<ListOption> &opts) noexcept
+                -> tl::expected<std::vector<types::ContainerListItem>,
                                 std::exception_ptr> = 0;
 };
 
