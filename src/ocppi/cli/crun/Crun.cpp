@@ -1,32 +1,31 @@
 #include "ocppi/cli/crun/Crun.hpp"
 
-#include <algorithm>        // for max
-#include <initializer_list> // for initializer_list
-#include <list>             // for list, operator!=
-#include <map>              // for operator!=, operator==
-#include <type_traits>      // for remove_reference<>::type
-#include <utility>          // for move
+#include <algorithm> // for max
+#include <istream>   // for basic_ios, basic_istream
+#include <list>      // for list, operator!=
+#include <map>       // for operator==, operator!=
+#include <utility>   // for move
 
-#include "boost/process/args.hpp"           // for args, args_
-#include "boost/process/io.hpp"             // for std_out, std_out_
-#include "boost/process/pipe.hpp"           // for ipstream
-#include "boost/process/system.hpp"         // for system
-#include "nlohmann/json.hpp"                // for basic_json, basic_jso...
-#include "nlohmann/json_fwd.hpp"            // for json
-#include "ocppi/cli/CommandFailedError.hpp" // for CommandFailedError
-#include "ocppi/cli/format.hpp"             // IWYU pragma: keep
-#include "ocppi/runtime/ContainerID.hpp"    // for ContainerID
-#include "ocppi/runtime/CreateOption.hpp"   // for CreateOption
-#include "ocppi/runtime/DeleteOption.hpp"   // for DeleteOption
-#include "ocppi/runtime/ExecOption.hpp"     // for ExecOption
-#include "ocppi/runtime/KillOption.hpp"     // for KillOption
-#include "ocppi/runtime/ListOption.hpp"     // for ListOption
-#include "ocppi/runtime/Signal.hpp"         // for Signal
-#include "ocppi/runtime/StartOption.hpp"    // for StartOption
-#include "ocppi/runtime/StateOption.hpp"    // for StateOption
+#include "boost/process/args.hpp"                   // for args, args_
+#include "boost/process/io.hpp"                     // for std_out, std_out_
+#include "boost/process/pipe.hpp"                   // for ipstream
+#include "boost/process/system.hpp"                 // for system
+#include "nlohmann/json.hpp"                        // for basic_json
+#include "nlohmann/json_fwd.hpp"                    // for json
+#include "ocppi/cli/CommandFailedError.hpp"         // for CommandFailedError
+#include "ocppi/cli/format.hpp"                     // IWYU pragma: keep
+#include "ocppi/runtime/ContainerID.hpp"            // for ContainerID
+#include "ocppi/runtime/CreateOption.hpp"           // for CreateOption
+#include "ocppi/runtime/DeleteOption.hpp"           // for DeleteOption
+#include "ocppi/runtime/ExecOption.hpp"             // for ExecOption
+#include "ocppi/runtime/KillOption.hpp"             // for KillOption
+#include "ocppi/runtime/ListOption.hpp"             // for ListOption
+#include "ocppi/runtime/Signal.hpp"                 // for Signal
+#include "ocppi/runtime/StartOption.hpp"            // for StartOption
+#include "ocppi/runtime/StateOption.hpp"            // for StateOption
 #include "ocppi/runtime/state/types/Generators.hpp" // IWYU pragma: keep
 #include "ocppi/runtime/state/types/State.hpp"      // for State
-#include "ocppi/types/ContainerListItem.hpp"        // for Item
+#include "ocppi/types/ContainerListItem.hpp"        // for ContainerListItem
 #include "ocppi/types/Generators.hpp"               // IWYU pragma: keep
 #include "spdlog/spdlog.h"                          // for SPDLOG_LOGGER_DEBUG
 

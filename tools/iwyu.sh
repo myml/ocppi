@@ -1,5 +1,7 @@
 #!/bin/env bash
 
+set -e
+
 GIT=${GIT:="git"}
 
 cd "$("$GIT" rev-parse --show-toplevel)" || exit 255
@@ -10,6 +12,8 @@ IWYU_TOOL=${IWYU_TOOL:=$({
 	echo iwyu-tool
 })}
 
+JQ=${JQ:=jq}
+
 cmake \
 	-B build-iwyu \
 	-DFETCHCONTENT_QUIET=OFF \
@@ -17,11 +21,19 @@ cmake \
 	-DCPM_DOWNLOAD_ALL=YES \
 	-DCMAKE_CXX_STANDARD=17 \
 	-DCMAKE_CXX_STANDARD_REQUIRED=YES \
-	-DCMAKE_EXPORT_COMPILE_COMMANDS=YES \
-	-DCMAKE_CXX_COMPILER=/usr/bin/clang++
+	-DCMAKE_EXPORT_COMPILE_COMMANDS=YES
+
+"$JQ" -c '[ .[] | select( .file | ( contains("'"$(pwd)"'/src") or contains("'"$(pwd)"'/examples") ) ) ]' \
+	<build-iwyu/compile_commands.json \
+	>build-iwyu/new-compile_commands.json
+mv build-iwyu/{new-,}compile_commands.json
 
 # shellcheck disable=SC2046
-"$IWYU_TOOL" -p build-iwyu $(find . -path './libs*' \( -name '*.c' -o -name '*.cpp' \) -printf "%p ") | tee build/iwyu.out
+"$IWYU_TOOL" -p build-iwyu \
+	$(find . -path './libs*' \( -name '*.c' -o -name '*.cpp' \) -printf "%p ") \
+	-- \
+	-Xiwyu --mapping_file="$(pwd)/tools/iwyu/mapping.imp" |
+	tee build/iwyu.out
 
 IWYU_FIX_INCLUDES=${IWYU_FIX_INCLUDES:=$({
 	command -v fix_include &>/dev/null && echo "fix_include" && exit

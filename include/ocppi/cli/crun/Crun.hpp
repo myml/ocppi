@@ -2,14 +2,19 @@
 
 #include <exception>  // for exception_ptr
 #include <filesystem> // for path
-#include <memory>     // for make_shared, shared_ptr, unique_ptr
+#include <list>       // for list
+#include <memory>     // for make_shared, shared_ptr
 #include <string>     // for string
 #include <vector>     // for vector
 
-#include "ocppi/cli/CLI.hpp" // for CLI
-#include "ocppi/types/ContainerListItem.hpp"
-#include "spdlog/spdlog.h"
-#include "tl/expected.hpp" // for expected
+#include "ocppi/cli/CLI.hpp"                 // for CLI
+#include "ocppi/types/ContainerListItem.hpp" // for ContainerListItem
+#include "tl/expected.hpp"                   // for expected
+
+namespace spdlog
+{
+class logger;
+} // namespace spdlog
 
 namespace ocppi
 {
@@ -24,6 +29,7 @@ class Signal;
 class StartOption;
 class StateOption;
 class ListOption;
+
 namespace state
 {
 namespace types
@@ -31,13 +37,6 @@ namespace types
 struct State;
 } // namespace types
 } // namespace state
-namespace list
-{
-namespace types
-{
-struct Item;
-}; // namespace types
-} // namespace list
 
 } // namespace runtime
 } // namespace ocppi
@@ -93,6 +92,6 @@ class Crun final : public CLI {
         [[nodiscard]]
         auto list(const std::vector<runtime::ListOption> &opts = {}) noexcept
                 -> tl::expected<std::list<types::ContainerListItem>,
-                                std::exception_ptr>;
+                                std::exception_ptr> override;
 };
 }

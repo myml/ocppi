@@ -1,19 +1,21 @@
 #pragma once
 
 #include <exception> // for exception_ptr
+#include <list>      // for list
 #include <string>    // for string
 #include <vector>    // for vector
 
-#include "ocppi/runtime/ListOption.hpp"
-#include "ocppi/runtime/SpecRuntime.hpp" // for SpecRuntime
-#include "ocppi/types/ContainerListItem.hpp"
-#include "tl/expected.hpp" // for expected
+#include "ocppi/runtime/SpecRuntime.hpp"     // for SpecRuntime
+#include "ocppi/types/ContainerListItem.hpp" // for ContainerListItem
+#include "tl/expected.hpp"                   // for expected
+
 namespace ocppi
 {
 namespace runtime
 {
 class ContainerID;
 class ExecOption;
+class ListOption;
 } // namespace runtime
 } // namespace ocppi
 

@@ -135,7 +135,7 @@ generate \
 
 PATCH_FILE=${PATCH_FILE:="$repoRoot"/tools/codegen/fix.patch}
 if [[ ! -f "$PATCH_FILE" ]]; then
-        echo "No patch file found at $PATCH_FILE"
+	echo "No patch file found at $PATCH_FILE"
 	exit
 fi
 

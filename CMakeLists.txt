@@ -53,9 +53,8 @@ CPMFindPackage(
 
 CPMFindPackage(
   NAME Boost COMPONENTS headers
-  VERSION 1.74.0
-  # NOTE: 1.81.0 is the oldest release on gtihub
-  URL "https://github.com/boostorg/boost/releases/download/boost-1.81.0/boost-1.81.0.7z"
+  VERSION 1.64.0
+  URL "https://github.com/boostorg/boost/releases/download/boost-1.84.0/boost-1.84.0.7z"
   EXCLUDE_FROM_ALL ON)
 
 if(NOT TARGET Boost::process)

@@ -1,10 +1,14 @@
-#include <stdio.h>  // for FILE, stderr
+#include <stdio.h>  // for stderr
 #include <unistd.h> // for isatty
 
-#include <exception>   // for exception, rethrow_exce...
-#include <iostream>    // for operator<<, char_traits
+#include <algorithm>   // for max
+#include <exception>   // for exception_ptr, exception
+#include <filesystem>  // for path
+#include <iostream>    // for basic_ostream, operator<<
+#include <list>        // for list, operator!=, _List...
+#include <map>         // for operator!=, operator==
 #include <memory>      // for shared_ptr, make_shared
-#include <string>      // for operator<<
+#include <string>      // for char_traits, basic_string
 #include <string_view> // for operator<<, string_view
 #include <utility>     // for move
 #include <vector>      // for vector
@@ -15,15 +19,18 @@
 #include "nlohmann/json_fwd.hpp"                    // for json
 #include "ocppi/cli/CLI.hpp"                        // for CLI
 #include "ocppi/cli/crun/Crun.hpp"                  // for Crun
-#include "ocppi/runtime/ContainerID.hpp"            // IWYU pragma: keep
-#include "ocppi/runtime/Signal.hpp"                 // IWYU pragma: keep
+#include "ocppi/runtime/ContainerID.hpp"            // for ContainerID
+#include "ocppi/runtime/ListOption.hpp"             // IWYU pragma: keep
+#include "ocppi/runtime/Signal.hpp"                 // for Signal
 #include "ocppi/runtime/state/types/Generators.hpp" // IWYU pragma: keep
+#include "ocppi/types/ContainerListItem.hpp"        // for ContainerListItem
 #include "ocppi/types/Generators.hpp"               // IWYU pragma: keep
-#include "spdlog/common.h"                          // for trace
-#include "spdlog/logger.h"                          // for logger
-#include "spdlog/sinks/stdout_color_sinks.h"        // for stderr_color_sink_mt
-#include "spdlog/sinks/systemd_sink.h"              // for systemd_sink_mt
-#include "tl/expected.hpp"                          // for expected
+#include "spdlog/common.h"                   // for level_enum, color_mode
+#include "spdlog/logger.h"                   // for logger
+#include "spdlog/sinks/ansicolor_sink.h"     // for ansicolor_stderr_sink
+#include "spdlog/sinks/stdout_color_sinks.h" // for stderr_color_sink_mt
+#include "spdlog/sinks/systemd_sink.h"       // for systemd_sink_mt, system...
+#include "tl/expected.hpp"                   // for expected
 
 namespace spdlog
 {
