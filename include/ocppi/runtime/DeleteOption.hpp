@@ -5,7 +5,7 @@
 namespace ocppi::runtime
 {
 
-class DeleteOption : public Option {
+class DeleteOption : public virtual Option {
         using Option::Option;
 };
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <exception> // for exception_ptr
+#include <memory>    // for unique_ptr
 #include <string>    // for string
 #include <vector>    // for vector
 
@@ -28,9 +29,10 @@ class Runtime : public SpecRuntime {
                           const std::vector<std::string> &command) noexcept
                 -> tl::expected<void, std::exception_ptr> = 0;
         [[nodiscard]]
-        virtual auto exec(const ContainerID &id, const std::string &executable,
-                          const std::vector<std::string> &command,
-                          const std::vector<ExecOption> &opts) noexcept
+        virtual auto
+        exec(const ContainerID &id, const std::string &executable,
+             const std::vector<std::string> &command,
+             const std::vector<std::unique_ptr<const ExecOption>> &opts) noexcept
                 -> tl::expected<void, std::exception_ptr> = 0;
 
         [[nodiscard]]
@@ -38,7 +40,8 @@ class Runtime : public SpecRuntime {
                 -> tl::expected<std::vector<types::ContainerListItem>,
                                 std::exception_ptr> = 0;
         [[nodiscard]]
-        virtual auto list(const std::vector<ListOption> &opts) noexcept
+        virtual auto
+        list(const std::vector<std::unique_ptr<const ListOption>> &opts) noexcept
                 -> tl::expected<std::vector<types::ContainerListItem>,
                                 std::exception_ptr> = 0;
 };

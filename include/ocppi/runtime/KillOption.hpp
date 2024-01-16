@@ -5,7 +5,7 @@
 namespace ocppi::runtime
 {
 
-class KillOption : public Option {
+class KillOption : public virtual Option {
         using Option::Option;
 };
 

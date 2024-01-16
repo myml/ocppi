@@ -5,7 +5,7 @@
 namespace ocppi::runtime
 {
 
-class StateOption : public Option {
+class StateOption : public virtual Option {
         using Option::Option;
 };
 

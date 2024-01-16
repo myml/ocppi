@@ -1,8 +1,6 @@
 #include "ocppi/cli/crun/Crun.hpp"
 
-#include "ocppi/cli/format.hpp"                     // IWYU pragma: keep
-#include "ocppi/runtime/state/types/Generators.hpp" // IWYU pragma: keep
-#include "ocppi/types/Generators.hpp"               // IWYU pragma: keep
+#include "spdlog/spdlog.h" // IWYU pragma: keep
 
 namespace spdlog
 {

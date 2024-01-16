@@ -1,30 +1,32 @@
 #include "ocppi/cli/CommonCLI.hpp"
 
-#include <errno.h> // for ENOENT
-
 #include <algorithm>    // for max
-#include <list>         // for list, operator!=
+#include <cerrno>       // for ENOENT
+#include <iterator>     // for make_move_iterator
 #include <map>          // for operator==, operator!=
+#include <string>       // for basic_string, string
 #include <system_error> // for generic_category, sys...
 #include <utility>      // for move
+#include <vector>       // for vector
 
-#include "boost/process/args.hpp"                   // for args, args_
-#include "boost/process/io.hpp"                     // for std_out, std_out_
-#include "boost/process/pipe.hpp"                   // for ipstream
-#include "boost/process/system.hpp"                 // for system
-#include "nlohmann/json.hpp"                        // for basic_json
-#include "nlohmann/json_fwd.hpp"                    // for json
-#include "ocppi/cli/CommandFailedError.hpp"         // for CommandFailedError
-#include "ocppi/cli/format.hpp"                     // IWYU pragma: keep
-#include "ocppi/runtime/ContainerID.hpp"            // for ContainerID
-#include "ocppi/runtime/CreateOption.hpp"           // for CreateOption
-#include "ocppi/runtime/DeleteOption.hpp"           // for DeleteOption
-#include "ocppi/runtime/ExecOption.hpp"             // for ExecOption
-#include "ocppi/runtime/KillOption.hpp"             // for KillOption
-#include "ocppi/runtime/ListOption.hpp"             // for ListOption
-#include "ocppi/runtime/Signal.hpp"                 // for Signal
-#include "ocppi/runtime/StartOption.hpp"            // for StartOption
-#include "ocppi/runtime/StateOption.hpp"            // for StateOption
+#include "boost/process/args.hpp"           // for args, args_
+#include "boost/process/io.hpp"             // for std_out, std_out_
+#include "boost/process/pipe.hpp"           // for ipstream
+#include "boost/process/system.hpp"         // for system
+#include "nlohmann/json.hpp"                // for basic_json
+#include "nlohmann/json_fwd.hpp"            // for json
+#include "ocppi/cli/CommandFailedError.hpp" // for CommandFailedError
+#include "ocppi/cli/format.hpp"             // IWYU pragma: keep
+#include "ocppi/runtime/ContainerID.hpp"    // for ContainerID
+#include "ocppi/runtime/CreateOption.hpp"   // for CreateOption
+#include "ocppi/runtime/DeleteOption.hpp"   // for DeleteOption
+#include "ocppi/runtime/ExecOption.hpp"     // for ExecOption
+#include "ocppi/runtime/GlobalOption.hpp"   // for GlobalOption (ptr only)
+#include "ocppi/runtime/KillOption.hpp"     // for KillOption
+#include "ocppi/runtime/ListOption.hpp"     // for ListOption
+#include "ocppi/runtime/Signal.hpp"         // for Signal
+#include "ocppi/runtime/StartOption.hpp"    // for StartOption
+#include "ocppi/runtime/StateOption.hpp"    // for StateOption
 #include "ocppi/runtime/state/types/Generators.hpp" // IWYU pragma: keep
 #include "ocppi/runtime/state/types/State.hpp"      // for State
 #include "ocppi/types/ContainerListItem.hpp"        // for ContainerListItem
@@ -38,6 +40,54 @@ class logger;
 
 namespace ocppi::cli
 {
+
+namespace
+{
+
+template <typename Result, typename Opt>
+auto doCommand(const std::string &bin,
+               [[maybe_unused]] const std::shared_ptr<spdlog::logger> &logger,
+               const std::string &command,
+               const std::vector<std::unique_ptr<const Opt>> &opts,
+               std::vector<std::string> &&arguments) -> Result
+{
+        static_assert(std::is_base_of_v<Opt, runtime::GlobalOption>);
+
+        arguments.insert(arguments.begin(), command);
+
+        for (const auto &opt : opts) {
+                auto args = opt->args();
+                auto loc = arguments.begin();
+
+                if (dynamic_cast<const runtime::GlobalOption *>(opt.get()) !=
+                    nullptr) {
+                        loc = arguments.end();
+                }
+
+                arguments.insert(loc, std::make_move_iterator(args.begin()),
+                                 std::make_move_iterator(args.end()));
+        }
+
+        SPDLOG_LOGGER_DEBUG(logger, "running {} with arguments: {}", bin,
+                            arguments);
+
+        boost::process::ipstream out_ips;
+        auto ret = boost::process::system(
+                bin, boost::process::args(std::move(arguments)),
+                boost::process::std_out > out_ips);
+        if (ret != 0) {
+                throw CommandFailedError(ret, bin);
+        }
+
+        if constexpr (std::is_void_v<Result>) {
+                return;
+        } else {
+                auto json_result = nlohmann::json::parse(out_ips);
+                return json_result.get<Result>();
+        }
+}
+
+}
 
 CommonCLI::CommonCLI(std::filesystem::path bin,
                      std::shared_ptr<spdlog::logger> logger)
@@ -60,40 +110,6 @@ auto CommonCLI::logger() const -> const std::shared_ptr<spdlog::logger> &
         return this->logger_;
 }
 
-namespace
-{
-
-auto doState(const std::string &bin,
-             [[maybe_unused]] const std::shared_ptr<spdlog::logger> &logger,
-             const runtime::ContainerID &id,
-             const std::vector<runtime::StateOption> &opts)
-        -> runtime::state::types::State
-{
-        std::list<std::string> args;
-
-        for (auto &opt : opts) {
-                args.splice(args.end(), opt.args());
-        }
-
-        args.push_front("state");
-        args.push_back(id);
-
-        SPDLOG_LOGGER_DEBUG(logger, "running {} with arguments: {}", bin, args);
-
-        boost::process::ipstream out_ips;
-        auto ret = boost::process::system(bin,
-                                          boost::process::args(std::move(args)),
-                                          boost::process::std_out > out_ips);
-        if (ret) {
-                throw CommandFailedError(ret, bin);
-        }
-
-        auto j = nlohmann::json::parse(out_ips);
-        return j.get<runtime::state::types::State>();
-}
-
-}
-
 auto CommonCLI::state(const runtime::ContainerID &id) const noexcept
         -> tl::expected<runtime::state::types::State, std::exception_ptr>
 {
@@ -102,44 +118,14 @@ auto CommonCLI::state(const runtime::ContainerID &id) const noexcept
 
 auto CommonCLI::state(
         const runtime::ContainerID &id,
-        const std::vector<runtime::StateOption> &opts) const noexcept
+        const std::vector<std::unique_ptr<const runtime::StateOption>> &opts)
+        const noexcept
         -> tl::expected<runtime::state::types::State, std::exception_ptr>
 try {
-        return doState(this->bin(), this->logger(), id, opts);
+        return doCommand<runtime::state::types::State>(
+                this->bin(), this->logger(), "state", opts, { id });
 } catch (...) {
         return tl::unexpected(std::current_exception());
-}
-
-namespace
-{
-
-void doCreate(const std::string &bin,
-              [[maybe_unused]] const std::shared_ptr<spdlog::logger> &logger,
-              const runtime::ContainerID &id,
-              const std::filesystem::path &pathToBundle,
-              const std::vector<runtime::CreateOption> &opts)
-{
-        std::list<std::string> args{
-                "-b",
-                pathToBundle,
-        };
-
-        for (auto &opt : opts) {
-                args.splice(args.end(), opt.args());
-        }
-
-        args.push_front("create");
-        args.push_back(id);
-
-        SPDLOG_LOGGER_DEBUG(logger, "running {} with arguments: {}", bin, args);
-
-        auto ret = boost::process::system(
-                bin, boost::process::args(std::move(args)));
-        if (ret) {
-                throw CommandFailedError(ret, bin);
-        }
-}
-
 }
 
 auto CommonCLI::create(const runtime::ContainerID &id,
@@ -149,43 +135,22 @@ auto CommonCLI::create(const runtime::ContainerID &id,
         return this->create(id, pathToBundle, {});
 }
 
-auto CommonCLI::create(const runtime::ContainerID &id,
-                       const std::filesystem::path &pathToBundle,
-                       const std::vector<runtime::CreateOption> &opts) noexcept
-        -> tl::expected<void, std::exception_ptr>
+auto CommonCLI::create(
+        const runtime::ContainerID &id,
+        const std::filesystem::path &pathToBundle,
+        const std::vector<std::unique_ptr<const runtime::CreateOption>>
+                &opts) noexcept -> tl::expected<void, std::exception_ptr>
 try {
-        doCreate(this->bin(), this->logger(), id, pathToBundle, opts);
+        std::vector<std::string> arguments;
+        arguments.push_back(id);
+        arguments.emplace_back("-b");
+        arguments.push_back(pathToBundle);
+
+        doCommand<void>(this->bin(), this->logger(), "create", opts,
+                        std::move(arguments));
         return {};
 } catch (...) {
         return tl::unexpected(std::current_exception());
-}
-
-namespace
-{
-
-void doStart(const std::string &bin,
-             [[maybe_unused]] const std::shared_ptr<spdlog::logger> &logger,
-             const runtime::ContainerID &id,
-             const std::vector<runtime::StartOption> &opts)
-{
-        std::list<std::string> args;
-
-        for (auto &opt : opts) {
-                args.splice(args.end(), opt.args());
-        }
-
-        args.push_front("start");
-        args.push_back(id);
-
-        SPDLOG_LOGGER_DEBUG(logger, "running {} with arguments: {}", bin, args);
-
-        auto ret = boost::process::system(
-                bin, boost::process::args(std::move(args)));
-        if (ret) {
-                throw CommandFailedError(ret, bin);
-        }
-}
-
 }
 
 auto CommonCLI::start(const runtime::ContainerID &id) noexcept
@@ -194,43 +159,15 @@ auto CommonCLI::start(const runtime::ContainerID &id) noexcept
         return this->start(id, {});
 }
 
-auto CommonCLI::start(const runtime::ContainerID &id,
-                      const std::vector<runtime::StartOption> &opts) noexcept
-        -> tl::expected<void, std::exception_ptr>
+auto CommonCLI::start(
+        const runtime::ContainerID &id,
+        const std::vector<std::unique_ptr<const runtime::StartOption>>
+                &opts) noexcept -> tl::expected<void, std::exception_ptr>
 try {
-        doStart(this->bin(), this->logger(), id, opts);
+        doCommand<void>(this->bin(), this->logger(), "start", opts, { id });
         return {};
 } catch (...) {
         return tl::unexpected(std::current_exception());
-}
-
-namespace
-{
-
-void doKill(const std::string &bin,
-            [[maybe_unused]] const std::shared_ptr<spdlog::logger> &logger,
-            const runtime::ContainerID &id, const runtime::Signal &signal,
-            const std::vector<runtime::KillOption> &opts)
-{
-        std::list<std::string> args;
-
-        for (auto &opt : opts) {
-                args.splice(args.end(), opt.args());
-        }
-
-        args.push_front("kill");
-        args.push_back(dynamic_cast<const std::string &>(id));
-        args.push_back(dynamic_cast<const std::string &>(signal));
-
-        SPDLOG_LOGGER_DEBUG(logger, "running {} with arguments: {}", bin, args);
-
-        auto ret = boost::process::system(
-                bin, boost::process::args(std::move(args)));
-        if (ret) {
-                throw CommandFailedError(ret, bin);
-        }
-}
-
 }
 
 auto CommonCLI::kill(const runtime::ContainerID &id,
@@ -240,43 +177,21 @@ auto CommonCLI::kill(const runtime::ContainerID &id,
         return this->kill(id, signal, {});
 }
 
-auto CommonCLI::kill(const runtime::ContainerID &id,
-                     const runtime::Signal &signal,
-                     const std::vector<runtime::KillOption> &opts) noexcept
-        -> tl::expected<void, std::exception_ptr>
+auto CommonCLI::kill(
+        const runtime::ContainerID &id, const runtime::Signal &signal,
+        const std::vector<std::unique_ptr<const runtime::KillOption>>
+                &opts) noexcept -> tl::expected<void, std::exception_ptr>
 try {
-        doKill(this->bin(), this->logger(), id, signal, opts);
+        std::vector<std::string> arguments;
+        arguments.push_back(id);
+        arguments.push_back(signal);
+
+        doCommand<void>(this->bin(), this->logger(), "kill", opts,
+                        std::move(arguments));
         return {};
 
 } catch (...) {
         return tl::unexpected(std::current_exception());
-}
-
-namespace
-{
-
-void doDelete(const std::string &bin,
-              [[maybe_unused]] const std::shared_ptr<spdlog::logger> &logger,
-              const runtime::ContainerID &id,
-              const std::vector<runtime::DeleteOption> &opts)
-{
-        std::list<std::string> args;
-        for (auto &opt : opts) {
-                args.splice(args.end(), opt.args());
-        }
-
-        args.push_front("delete");
-        args.push_back(id);
-
-        SPDLOG_LOGGER_DEBUG(logger, "running {} with arguments: {}", bin, args);
-
-        auto ret = boost::process::system(
-                bin, boost::process::args(std::move(args)));
-        if (ret) {
-                throw CommandFailedError(ret, bin);
-        }
-}
-
 }
 
 auto CommonCLI::delete_(const runtime::ContainerID &id) noexcept
@@ -285,44 +200,15 @@ auto CommonCLI::delete_(const runtime::ContainerID &id) noexcept
         return this->delete_(id, {});
 }
 
-auto CommonCLI::delete_(const runtime::ContainerID &id,
-                        const std::vector<runtime::DeleteOption> &opts) noexcept
-        -> tl::expected<void, std::exception_ptr>
+auto CommonCLI::delete_(
+        const runtime::ContainerID &id,
+        const std::vector<std::unique_ptr<const runtime::DeleteOption>>
+                &opts) noexcept -> tl::expected<void, std::exception_ptr>
 try {
-        doDelete(this->bin(), this->logger(), id, opts);
+        doCommand<void>(this->bin(), this->logger(), "delete", opts, { id });
         return {};
 } catch (...) {
         return tl::unexpected(std::current_exception());
-}
-
-namespace
-{
-
-void doExec(const std::string &bin,
-            [[maybe_unused]] const std::shared_ptr<spdlog::logger> &logger,
-            const runtime::ContainerID &id, const std::string &executable,
-            const std::vector<std::string> &command,
-            const std::vector<runtime::ExecOption> &opts)
-{
-        std::list<std::string> args;
-        for (auto &opt : opts) {
-                args.splice(args.end(), opt.args());
-        }
-
-        args.push_front("exec");
-        args.push_back(id);
-        args.push_back(executable);
-        args.insert(args.end(), command.begin(), command.end());
-
-        SPDLOG_LOGGER_DEBUG(logger, "running {} with arguments: {}", bin, args);
-
-        auto ret = boost::process::system(
-                bin, boost::process::args(std::move(args)));
-        if (ret) {
-                throw CommandFailedError(ret, bin);
-        }
-}
-
 }
 
 auto CommonCLI::exec(const runtime::ContainerID &id,
@@ -333,48 +219,22 @@ auto CommonCLI::exec(const runtime::ContainerID &id,
         return this->exec(id, executable, command, {});
 }
 
-auto CommonCLI::exec(const runtime::ContainerID &id,
-                     const std::string &executable,
-                     const std::vector<std::string> &command,
-                     const std::vector<runtime::ExecOption> &opts) noexcept
-        -> tl::expected<void, std::exception_ptr>
+auto CommonCLI::exec(
+        const runtime::ContainerID &id, const std::string &executable,
+        const std::vector<std::string> &command,
+        const std::vector<std::unique_ptr<const runtime::ExecOption>>
+                &opts) noexcept -> tl::expected<void, std::exception_ptr>
 try {
-        doExec(this->bin(), this->logger(), id, executable, command, opts);
+        std::vector<std::string> arguments;
+        arguments.push_back(id);
+        arguments.push_back(executable);
+        arguments.insert(arguments.end(), command.begin(), command.end());
+
+        doCommand<void>(this->bin(), this->logger(), "exec", opts,
+                        std::move(arguments));
         return {};
 } catch (...) {
         return tl::unexpected(std::current_exception());
-}
-
-namespace
-{
-
-tl::expected<std::vector<types::ContainerListItem>, std::exception_ptr>
-doList(const std::string &bin,
-       [[maybe_unused]] const std::shared_ptr<spdlog::logger> &logger,
-       const std::vector<runtime::ListOption> &opts)
-{
-        std::list<std::string> args;
-        for (auto &opt : opts) {
-                args.splice(args.end(), opt.args());
-        }
-
-        args.push_front("list");
-        args.push_back("-f");
-        args.push_back("json");
-        SPDLOG_LOGGER_DEBUG(logger, "running {} with arguments: {}", bin, args);
-
-        boost::process::ipstream out_ips;
-        auto ret = boost::process::system(bin,
-                                          boost::process::args(std::move(args)),
-                                          boost::process::std_out > out_ips);
-        if (ret) {
-                throw CommandFailedError(ret, bin);
-        }
-
-        auto j = nlohmann::json::parse(out_ips);
-        return j.get<std::vector<types::ContainerListItem>>();
-}
-
 }
 
 auto CommonCLI::list() noexcept
@@ -384,11 +244,19 @@ auto CommonCLI::list() noexcept
         return this->list({});
 }
 
-auto CommonCLI::list(const std::vector<runtime::ListOption> &opts) noexcept
+auto CommonCLI::list(
+        const std::vector<std::unique_ptr<const runtime::ListOption>>
+                &opts) noexcept
         -> tl::expected<std::vector<types::ContainerListItem>,
                         std::exception_ptr>
 try {
-        return doList(this->bin(), this->logger(), opts);
+        std::vector<std::string> arguments;
+        arguments.emplace_back("-f");
+        arguments.emplace_back("json");
+
+        return doCommand<std::vector<types::ContainerListItem>>(
+                this->bin(), this->logger(), "list", opts,
+                std::move(arguments));
 } catch (...) {
         return tl::unexpected(std::current_exception());
 }
