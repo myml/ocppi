@@ -1,12 +1,12 @@
-#include <stdio.h>  // for stderr
 #include <unistd.h> // for isatty
 
 #include <algorithm>   // for max
+#include <cstdio>      // for stderr
 #include <exception>   // for exception_ptr, exception
 #include <filesystem>  // for path
 #include <iostream>    // for basic_ostream, operat...
 #include <map>         // for operator!=, operator==
-#include <memory>      // for shared_ptr, make_shared
+#include <memory>      // for shared_ptr, unique_ptr
 #include <mutex>       // for mutex
 #include <string>      // for char_traits, operator<<
 #include <string_view> // for operator<<, string_view
@@ -50,7 +50,7 @@ try {
 
 auto main() -> int
 {
-        std::shared_ptr<spdlog::logger> logger;
+        std::unique_ptr<spdlog::logger> logger;
         {
                 auto sinks = std::vector<std::shared_ptr<spdlog::sinks::sink>>(
                         { std::make_shared<spdlog::sinks::systemd_sink_mt>(
@@ -60,7 +60,7 @@ auto main() -> int
                                         spdlog::sinks::stderr_color_sink_mt>());
                 }
 
-                logger = std::make_shared<spdlog::logger>(
+                logger = std::make_unique<spdlog::logger>(
                         "ocppi", sinks.begin(), sinks.end());
 
                 logger->set_level(spdlog::level::trace);

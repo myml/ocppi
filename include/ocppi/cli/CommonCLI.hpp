@@ -48,9 +48,10 @@ namespace ocppi::cli
 class CommonCLI : public CLI {
     protected:
         [[nodiscard]]
-        auto logger() const -> const std::shared_ptr<spdlog::logger> &;
+        auto logger() const -> const std::unique_ptr<spdlog::logger> &;
 
-        CommonCLI(std::filesystem::path, std::shared_ptr<spdlog::logger>);
+        CommonCLI(std::filesystem::path,
+                  const std::unique_ptr<spdlog::logger> &);
 
     public:
         CommonCLI(const CommonCLI &) = delete;
@@ -139,7 +140,7 @@ class CommonCLI : public CLI {
 
     private:
         std::filesystem::path bin_;
-        std::shared_ptr<spdlog::logger> logger_;
+        const std::unique_ptr<spdlog::logger> &logger_;
 };
 
 }

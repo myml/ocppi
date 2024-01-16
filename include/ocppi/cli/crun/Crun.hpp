@@ -20,8 +20,7 @@ class Crun final : public CommonCLI {
 
     public:
         static auto New(const std::filesystem::path &bin,
-                        const std::shared_ptr<spdlog::logger> &logger =
-                                std::make_shared<spdlog::logger>("")) noexcept
+                        const std::unique_ptr<spdlog::logger> &logger) noexcept
                 -> tl::expected<std::unique_ptr<Crun>, std::exception_ptr>;
 };
 }

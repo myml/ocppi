@@ -54,7 +54,7 @@ namespace
 
 template <typename Result, typename Opt>
 auto doCommand(const std::string &bin,
-               [[maybe_unused]] const std::shared_ptr<spdlog::logger> &logger,
+               [[maybe_unused]] const std::unique_ptr<spdlog::logger> &logger,
                const std::string &command,
                const std::vector<std::unique_ptr<const Opt>> &opts,
                std::vector<std::string> &&arguments) -> Result
@@ -98,7 +98,7 @@ auto doCommand(const std::string &bin,
 }
 
 CommonCLI::CommonCLI(std::filesystem::path bin,
-                     std::shared_ptr<spdlog::logger> logger)
+                     const std::unique_ptr<spdlog::logger> &logger)
         : bin_(std::move(bin))
         , logger_(std::move(logger))
 {
@@ -113,7 +113,7 @@ auto CommonCLI::bin() const noexcept -> const std::filesystem::path &
         return this->bin_;
 }
 
-auto CommonCLI::logger() const -> const std::shared_ptr<spdlog::logger> &
+auto CommonCLI::logger() const -> const std::unique_ptr<spdlog::logger> &
 {
         return this->logger_;
 }
