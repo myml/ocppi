@@ -2,9 +2,8 @@
 
 #include <algorithm>    // for max
 #include <cerrno>       // for ENOENT
-#include <istream>      // for basic_ios, basic_ist...
 #include <iterator>     // for make_move_iterator
-#include <map>          // for operator==, operator!=
+#include <map>          // for operator!=, operator==
 #include <string>       // for basic_string, string
 #include <system_error> // for generic_category
 #include <utility>      // for move

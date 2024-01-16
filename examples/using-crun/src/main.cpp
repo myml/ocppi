@@ -4,9 +4,10 @@
 #include <algorithm>   // for max
 #include <exception>   // for exception_ptr, exception
 #include <filesystem>  // for path
-#include <iostream>    // for basic_ostream, operator<<
+#include <iostream>    // for basic_ostream, operat...
 #include <map>         // for operator!=, operator==
 #include <memory>      // for shared_ptr, make_shared
+#include <mutex>       // for mutex
 #include <string>      // for char_traits, operator<<
 #include <string_view> // for operator<<, string_view
 #include <utility>     // for move
@@ -20,13 +21,14 @@
 #include "ocppi/cli/crun/Crun.hpp"                  // for Crun
 #include "ocppi/runtime/Signal.hpp"                 // for Signal
 #include "ocppi/runtime/state/types/Generators.hpp" // IWYU pragma: keep
+#include "ocppi/runtime/state/types/State.hpp"      // for State
 #include "ocppi/types/ContainerListItem.hpp"        // for ContainerListItem
 #include "ocppi/types/Generators.hpp"               // IWYU pragma: keep
-#include "spdlog/common.h"                   // for level_enum, color_mode
+#include "spdlog/common.h"                   // for color_mode, level_enum
 #include "spdlog/logger.h"                   // for logger
 #include "spdlog/sinks/ansicolor_sink.h"     // for ansicolor_stderr_sink
 #include "spdlog/sinks/stdout_color_sinks.h" // for stderr_color_sink_mt
-#include "spdlog/sinks/systemd_sink.h"       // for systemd_sink_mt, system...
+#include "spdlog/sinks/systemd_sink.h"       // for systemd_sink_mt, syst...
 #include "tl/expected.hpp"                   // for expected
 
 namespace spdlog
@@ -105,7 +107,8 @@ auto main() -> int
         nlohmann::json j = state.value();
         std::cout << j.dump(1, '\t') << std::endl;
 
-        auto killResult = cli->kill(list->front().id, "SIGTERM");
+        auto killResult =
+                cli->kill(list->front().id, ocppi::runtime::Signal("SIGTERM"));
 
         if (!killResult.has_value()) {
                 printException("crun kill", killResult.error());

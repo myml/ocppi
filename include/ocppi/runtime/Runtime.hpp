@@ -5,13 +5,17 @@
 #include <string>    // for string
 #include <vector>    // for vector
 
-#include "ocppi/runtime/ContainerID.hpp"     // for ContainerID
-#include "ocppi/runtime/SpecRuntime.hpp"     // for SpecRuntime
-#include "ocppi/types/ContainerListItem.hpp" // for ContainerListItem
-#include "tl/expected.hpp"                   // for expected
+#include "ocppi/runtime/ContainerID.hpp" // for ContainerID
+#include "ocppi/runtime/SpecRuntime.hpp" // for SpecRuntime
+#include "tl/expected.hpp"               // for expected
 
 namespace ocppi
 {
+namespace types
+{
+struct ContainerListItem;
+} // namespace types
+
 namespace runtime
 {
 class ExecOption;

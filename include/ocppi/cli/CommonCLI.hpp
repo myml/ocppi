@@ -2,18 +2,21 @@
 
 #include <exception>  // for exception_ptr
 #include <filesystem> // for path
-#include <memory>     // for shared_ptr
+#include <memory>     // for unique_ptr, shared_ptr
 #include <string>     // for string
 #include <vector>     // for vector
 
-#include "ocppi/cli/CLI.hpp"                   // for CLI
-#include "ocppi/runtime/ContainerID.hpp"       // for ContainerID
-#include "ocppi/runtime/state/types/State.hpp" // for State
-#include "ocppi/types/ContainerListItem.hpp"   // for ContainerListItem
-#include "tl/expected.hpp"                     // for expected
+#include "ocppi/cli/CLI.hpp"             // for CLI
+#include "ocppi/runtime/ContainerID.hpp" // for ContainerID
+#include "tl/expected.hpp"               // for expected
 
 namespace ocppi
 {
+namespace types
+{
+struct ContainerListItem;
+} // namespace types
+
 namespace runtime
 {
 class CreateOption;
@@ -24,6 +27,13 @@ class ListOption;
 class Signal;
 class StartOption;
 class StateOption;
+namespace state
+{
+namespace types
+{
+struct State;
+} // namespace types
+} // namespace state
 } // namespace runtime
 } // namespace ocppi
 
