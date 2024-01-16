@@ -123,6 +123,7 @@ pfl_add_library(
   src/ocppi/runtime/DeleteOption.cpp
   src/ocppi/runtime/KillOption.cpp
   src/ocppi/runtime/Option.cpp
+  src/ocppi/runtime/OutputFormatOption.cpp
   src/ocppi/runtime/Runtime.cpp
   src/ocppi/runtime/Signal.cpp
   src/ocppi/runtime/StartOption.cpp
@@ -142,6 +143,7 @@ pfl_add_library(
   include/ocppi/runtime/DeleteOption.hpp
   include/ocppi/runtime/KillOption.hpp
   include/ocppi/runtime/Option.hpp
+  include/ocppi/runtime/OutputFormatOption.hpp
   include/ocppi/runtime/Runtime.hpp
   include/ocppi/runtime/Signal.hpp
   include/ocppi/runtime/StartOption.hpp

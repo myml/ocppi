@@ -2,36 +2,45 @@
 
 #include <algorithm>    // for max
 #include <cerrno>       // for ENOENT
+#include <istream>      // for basic_ios, basic_ist...
 #include <iterator>     // for make_move_iterator
 #include <map>          // for operator==, operator!=
 #include <string>       // for basic_string, string
-#include <system_error> // for generic_category, sys...
+#include <system_error> // for generic_category
 #include <utility>      // for move
 #include <vector>       // for vector
 
-#include "boost/process/args.hpp"           // for args, args_
-#include "boost/process/io.hpp"             // for std_out, std_out_
-#include "boost/process/pipe.hpp"           // for ipstream
-#include "boost/process/system.hpp"         // for system
-#include "nlohmann/json.hpp"                // for basic_json
-#include "nlohmann/json_fwd.hpp"            // for json
-#include "ocppi/cli/CommandFailedError.hpp" // for CommandFailedError
-#include "ocppi/cli/format.hpp"             // IWYU pragma: keep
-#include "ocppi/runtime/ContainerID.hpp"    // for ContainerID
-#include "ocppi/runtime/CreateOption.hpp"   // for CreateOption
-#include "ocppi/runtime/DeleteOption.hpp"   // for DeleteOption
-#include "ocppi/runtime/ExecOption.hpp"     // for ExecOption
-#include "ocppi/runtime/GlobalOption.hpp"   // for GlobalOption (ptr only)
-#include "ocppi/runtime/KillOption.hpp"     // for KillOption
-#include "ocppi/runtime/ListOption.hpp"     // for ListOption
-#include "ocppi/runtime/Signal.hpp"         // for Signal
-#include "ocppi/runtime/StartOption.hpp"    // for StartOption
-#include "ocppi/runtime/StateOption.hpp"    // for StateOption
+#include "boost/process/args.hpp"                   // for args, args_
+#include "boost/process/io.hpp"                     // for std_out, std_out_
+#include "boost/process/pipe.hpp"                   // for ipstream
+#include "boost/process/system.hpp"                 // for system
+#include "nlohmann/json.hpp"                        // for basic_json
+#include "nlohmann/json_fwd.hpp"                    // for json
+#include "ocppi/cli/CommandFailedError.hpp"         // for CommandFailedError
+#include "ocppi/cli/format.hpp"                     // IWYU pragma: keep
+#include "ocppi/runtime/ContainerID.hpp"            // for ContainerID
+#include "ocppi/runtime/CreateOption.hpp"           // for CreateOption
+#include "ocppi/runtime/DeleteOption.hpp"           // for DeleteOption
+#include "ocppi/runtime/ExecOption.hpp"             // for ExecOption
+#include "ocppi/runtime/KillOption.hpp"             // for KillOption
+#include "ocppi/runtime/ListOption.hpp"             // for ListOption
+#include "ocppi/runtime/OutputFormatOption.hpp"     // for OutputFormatOption
+#include "ocppi/runtime/Signal.hpp"                 // for Signal
+#include "ocppi/runtime/StartOption.hpp"            // for StartOption
+#include "ocppi/runtime/StateOption.hpp"            // for StateOption
 #include "ocppi/runtime/state/types/Generators.hpp" // IWYU pragma: keep
 #include "ocppi/runtime/state/types/State.hpp"      // for State
 #include "ocppi/types/ContainerListItem.hpp"        // for ContainerListItem
 #include "ocppi/types/Generators.hpp"               // IWYU pragma: keep
 #include "spdlog/spdlog.h"                          // for SPDLOG_LOGGER_DEBUG
+
+namespace ocppi
+{
+namespace runtime
+{
+class GlobalOption;
+} // namespace runtime
+} // namespace ocppi
 
 namespace spdlog
 {
@@ -241,7 +250,12 @@ auto CommonCLI::list() noexcept
         -> tl::expected<std::vector<types::ContainerListItem>,
                         std::exception_ptr>
 {
-        return this->list({});
+        auto format = std::make_unique<runtime::OutputFormatOption>(
+                runtime::OutputFormatOption::Format::Json);
+        std::vector<std::unique_ptr<const runtime::ListOption>> opt;
+        opt.push_back(std::move(format));
+
+        return this->list(opt);
 }
 
 auto CommonCLI::list(
@@ -250,13 +264,8 @@ auto CommonCLI::list(
         -> tl::expected<std::vector<types::ContainerListItem>,
                         std::exception_ptr>
 try {
-        std::vector<std::string> arguments;
-        arguments.emplace_back("-f");
-        arguments.emplace_back("json");
-
         return doCommand<std::vector<types::ContainerListItem>>(
-                this->bin(), this->logger(), "list", opts,
-                std::move(arguments));
+                this->bin(), this->logger(), "list", opts, {});
 } catch (...) {
         return tl::unexpected(std::current_exception());
 }
