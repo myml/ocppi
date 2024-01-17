@@ -1,17 +1,34 @@
-#include <unistd.h> // for isatty
+#include <unistd.h>
 
-#include <iostream> // for basic_ostream, cout
-#include <map>      // for operator==, operator!=
-#include <string>   // for char_traits, operat...
+#include <algorithm>
+#include <cstdio>
+#include <exception>
+#include <map>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
 
-#include "nlohmann/json.hpp"                     // for basic_json, operator<<
-#include "nlohmann/json_fwd.hpp"                 // for json
-#include "ocppi/runtime/config/types/Config.hpp" // for Config
+#include <bits/types/struct_FILE.h>
+
+#include "nlohmann/json.hpp"
+#include "nlohmann/json_fwd.hpp"
+#include "ocppi/runtime/config/types/Config.hpp"
 #include "ocppi/runtime/config/types/Generators.hpp" // IWYU pragma: keep
+#include "spdlog/common.h"
 #include "spdlog/logger.h"
+#include "spdlog/sinks/ansicolor_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/sinks/systemd_sink.h"
 #include "spdlog/spdlog.h"
+
+namespace spdlog
+{
+namespace sinks
+{
+class sink;
+} // namespace sinks
+} // namespace spdlog
 
 void printException(const std::unique_ptr<spdlog::logger> &logger,
                     std::string_view msg, std::exception_ptr ptr) noexcept

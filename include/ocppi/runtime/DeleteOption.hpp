@@ -1,12 +1,15 @@
 #pragma once
 
-#include "ocppi/runtime/Option.hpp"
+#include <string> // for basic_string, string
+#include <vector> // for vector
+
+#include "ocppi/runtime/GlobalOption.hpp" // for GlobalOption
 
 namespace ocppi::runtime
 {
 
-class DeleteOption : public virtual Option {
-        using Option::Option;
+struct DeleteOption : public GlobalOption {
+        std::vector<std::string> extra;
 };
 
 }

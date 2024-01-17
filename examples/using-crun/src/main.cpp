@@ -1,35 +1,34 @@
-#include <unistd.h> // for isatty
+#include <unistd.h>
 
-#include <algorithm>   // for max
-#include <cstdio>      // for stderr
-#include <exception>   // for exception_ptr, exception
-#include <iostream>    // for basic_ostream, endl
-#include <map>         // for operator!=, operator==
-#include <memory>      // for shared_ptr, unique_ptr
-#include <mutex>       // for mutex
-#include <string>      // for char_traits, operator<<
-#include <string_view> // for string_view
-#include <utility>     // for move
-#include <vector>      // for vector
+#include <algorithm>
+#include <cstdio>
+#include <exception>
+#include <filesystem>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
 
-#include <bits/types/struct_FILE.h> // for _IO_FILE
+#include <bits/types/struct_FILE.h>
 
-#include "nlohmann/json.hpp"                        // for basic_json
-#include "nlohmann/json_fwd.hpp"                    // for json
-#include "ocppi/cli/CLI.hpp"                        // for CLI
-#include "ocppi/cli/crun/Crun.hpp"                  // for Crun
-#include "ocppi/runtime/Signal.hpp"                 // for Signal
+#include "nlohmann/json.hpp"
+#include "nlohmann/json_fwd.hpp"
+#include "ocppi/cli/CLI.hpp"
+#include "ocppi/cli/crun/Crun.hpp"
+#include "ocppi/runtime/Signal.hpp"
 #include "ocppi/runtime/state/types/Generators.hpp" // IWYU pragma: keep
-#include "ocppi/runtime/state/types/State.hpp"      // for State
-#include "ocppi/types/ContainerListItem.hpp"        // for ContainerListItem
-#include "ocppi/types/Generators.hpp"               // IWYU pragma: keep
-#include "spdlog/common.h"                   // for color_mode, level_enum
-#include "spdlog/logger.h"                   // for logger
-#include "spdlog/sinks/ansicolor_sink.h"     // for ansicolor_stderr_sink
-#include "spdlog/sinks/stdout_color_sinks.h" // for stderr_color_sink_mt
-#include "spdlog/sinks/systemd_sink.h"       // for systemd_sink_mt, syst...
-#include "spdlog/spdlog.h"                   // for SPDLOG_LOGGER_ERROR
-#include "tl/expected.hpp"                   // for expected
+#include "ocppi/types/ContainerListItem.hpp"
+#include "ocppi/types/Generators.hpp" // IWYU pragma: keep
+#include "spdlog/common.h"
+#include "spdlog/logger.h"
+#include "spdlog/sinks/ansicolor_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/sinks/systemd_sink.h"
+#include "spdlog/spdlog.h"
+#include "tl/expected.hpp"
 
 namespace spdlog
 {

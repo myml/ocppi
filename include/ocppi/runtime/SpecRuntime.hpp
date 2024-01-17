@@ -38,8 +38,7 @@ class SpecRuntime {
                 -> tl::expected<state::types::State, std::exception_ptr> = 0;
         [[nodiscard]]
         virtual auto state(const ContainerID &id,
-                           const std::vector<std::unique_ptr<const StateOption>>
-                                   &opts) const noexcept
+                           const StateOption &option) const noexcept
                 -> tl::expected<state::types::State, std::exception_ptr> = 0;
 
         [[nodiscard]]
@@ -47,10 +46,9 @@ class SpecRuntime {
                             const std::filesystem::path &pathToBundle) noexcept
                 -> tl::expected<void, std::exception_ptr> = 0;
         [[nodiscard]]
-        virtual auto
-        create(const ContainerID &id, const std::filesystem::path &pathToBundle,
-               const std::vector<std::unique_ptr<const CreateOption>>
-                       &opts) noexcept
+        virtual auto create(const ContainerID &id,
+                            const std::filesystem::path &pathToBundle,
+                            const CreateOption &option) noexcept
                 -> tl::expected<void, std::exception_ptr> = 0;
 
         [[nodiscard]]
@@ -58,27 +56,23 @@ class SpecRuntime {
                 -> tl::expected<void, std::exception_ptr> = 0;
         [[nodiscard]]
         virtual auto start(const ContainerID &id,
-                           const std::vector<std::unique_ptr<const StartOption>>
-                                   &opts) noexcept
+                           const StartOption &option) noexcept
                 -> tl::expected<void, std::exception_ptr> = 0;
 
         [[nodiscard]]
         virtual auto kill(const ContainerID &id, const Signal &signal) noexcept
                 -> tl::expected<void, std::exception_ptr> = 0;
         [[nodiscard]]
-        virtual auto
-        kill(const ContainerID &id, const Signal &signal,
-             const std::vector<std::unique_ptr<const KillOption>> &opts) noexcept
+        virtual auto kill(const ContainerID &id, const Signal &signal,
+                          const KillOption &option) noexcept
                 -> tl::expected<void, std::exception_ptr> = 0;
 
         [[nodiscard]]
         virtual auto delete_(const ContainerID &id) noexcept
                 -> tl::expected<void, std::exception_ptr> = 0;
         [[nodiscard]]
-        virtual auto
-        delete_(const ContainerID &id,
-                const std::vector<std::unique_ptr<const DeleteOption>>
-                        &opts) noexcept
+        virtual auto delete_(const ContainerID &id,
+                             const DeleteOption &option) noexcept
                 -> tl::expected<void, std::exception_ptr> = 0;
 };
 

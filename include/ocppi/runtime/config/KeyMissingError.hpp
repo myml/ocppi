@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "ocppi/runtime/config/InvalidConfigError.hpp"
 
 namespace ocppi::runtime::config

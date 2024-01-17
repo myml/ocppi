@@ -1,45 +1,37 @@
 #include "ocppi/cli/CommonCLI.hpp"
 
-#include <algorithm>    // for max
-#include <cerrno>       // for ENOENT
-#include <iterator>     // for make_move_iterator
-#include <map>          // for operator!=, operator==
-#include <string>       // for basic_string, string
-#include <system_error> // for generic_category
-#include <utility>      // for move
-#include <vector>       // for vector
+#include <algorithm>
+#include <cerrno>
+#include <iterator>
+#include <map>
+#include <string>
+#include <system_error>
+#include <utility>
+#include <vector>
 
-#include "boost/process/args.hpp"                   // for args, args_
-#include "boost/process/io.hpp"                     // for std_out, std_out_
-#include "boost/process/pipe.hpp"                   // for ipstream
-#include "boost/process/system.hpp"                 // for system
-#include "nlohmann/json.hpp"                        // for basic_json
-#include "nlohmann/json_fwd.hpp"                    // for json
-#include "ocppi/cli/CommandFailedError.hpp"         // for CommandFailedError
-#include "ocppi/cli/format.hpp"                     // IWYU pragma: keep
-#include "ocppi/runtime/ContainerID.hpp"            // for ContainerID
-#include "ocppi/runtime/CreateOption.hpp"           // for CreateOption
-#include "ocppi/runtime/DeleteOption.hpp"           // for DeleteOption
-#include "ocppi/runtime/ExecOption.hpp"             // for ExecOption
-#include "ocppi/runtime/KillOption.hpp"             // for KillOption
-#include "ocppi/runtime/ListOption.hpp"             // for ListOption
-#include "ocppi/runtime/OutputFormatOption.hpp"     // for OutputFormatOption
-#include "ocppi/runtime/Signal.hpp"                 // for Signal
-#include "ocppi/runtime/StartOption.hpp"            // for StartOption
-#include "ocppi/runtime/StateOption.hpp"            // for StateOption
+#include "boost/process/args.hpp"
+#include "boost/process/io.hpp"
+#include "boost/process/pipe.hpp"
+#include "boost/process/system.hpp"
+#include "nlohmann/json.hpp"
+#include "nlohmann/json_fwd.hpp"
+#include "ocppi/cli/CommandFailedError.hpp"
+#include "ocppi/cli/format.hpp" // IWYU pragma: keep
+#include "ocppi/runtime/ContainerID.hpp"
+#include "ocppi/runtime/CreateOption.hpp"
+#include "ocppi/runtime/DeleteOption.hpp"
+#include "ocppi/runtime/ExecOption.hpp"
+#include "ocppi/runtime/GlobalOption.hpp"
+#include "ocppi/runtime/KillOption.hpp"
+#include "ocppi/runtime/ListOption.hpp"
+#include "ocppi/runtime/Signal.hpp"
+#include "ocppi/runtime/StartOption.hpp"
+#include "ocppi/runtime/StateOption.hpp"
 #include "ocppi/runtime/state/types/Generators.hpp" // IWYU pragma: keep
-#include "ocppi/runtime/state/types/State.hpp"      // for State
-#include "ocppi/types/ContainerListItem.hpp"        // for ContainerListItem
-#include "ocppi/types/Generators.hpp"               // IWYU pragma: keep
-#include "spdlog/spdlog.h"                          // for SPDLOG_LOGGER_DEBUG
-
-namespace ocppi
-{
-namespace runtime
-{
-class GlobalOption;
-} // namespace runtime
-} // namespace ocppi
+#include "ocppi/runtime/state/types/State.hpp"
+#include "ocppi/types/ContainerListItem.hpp"
+#include "ocppi/types/Generators.hpp" // IWYU pragma: keep
+#include "spdlog/spdlog.h"
 
 namespace spdlog
 {
@@ -52,29 +44,20 @@ namespace ocppi::cli
 namespace
 {
 
-template <typename Result, typename Opt>
+template <typename Result>
 auto doCommand(const std::string &bin,
                [[maybe_unused]] const std::unique_ptr<spdlog::logger> &logger,
-               const std::string &command,
-               const std::vector<std::unique_ptr<const Opt>> &opts,
+               std::vector<std::string> &&globalOption,
+               const std::string &command, std::vector<std::string> &&options,
                std::vector<std::string> &&arguments) -> Result
 {
-        static_assert(std::is_base_of_v<Opt, runtime::GlobalOption>);
-
         arguments.insert(arguments.begin(), command);
-
-        for (const auto &opt : opts) {
-                auto args = opt->args();
-                auto loc = arguments.begin();
-
-                if (dynamic_cast<const runtime::GlobalOption *>(opt.get()) !=
-                    nullptr) {
-                        loc = arguments.end();
-                }
-
-                arguments.insert(loc, std::make_move_iterator(args.begin()),
-                                 std::make_move_iterator(args.end()));
-        }
+        arguments.insert(arguments.begin(),
+                         std::make_move_iterator(globalOption.begin()),
+                         std::make_move_iterator(globalOption.end()));
+        arguments.insert(arguments.end(),
+                         std::make_move_iterator(options.begin()),
+                         std::make_move_iterator(options.end()));
 
         SPDLOG_LOGGER_DEBUG(logger, R"(Executing "{}" with arguments: {})", bin,
                             arguments);
@@ -124,14 +107,14 @@ auto CommonCLI::state(const runtime::ContainerID &id) const noexcept
         return this->state(id, {});
 }
 
-auto CommonCLI::state(
-        const runtime::ContainerID &id,
-        const std::vector<std::unique_ptr<const runtime::StateOption>> &opts)
-        const noexcept
+auto CommonCLI::state(const runtime::ContainerID &id,
+                      const runtime::StateOption &option) const noexcept
         -> tl::expected<runtime::state::types::State, std::exception_ptr>
 try {
         return doCommand<runtime::state::types::State>(
-                this->bin(), this->logger(), "state", opts, { id });
+                this->bin(), this->logger(),
+                this->generateGlobalOptions(option), "state",
+                this->generateSubcommandOptions(option), { id });
 } catch (...) {
         return tl::unexpected(std::current_exception());
 }
@@ -143,18 +126,19 @@ auto CommonCLI::create(const runtime::ContainerID &id,
         return this->create(id, pathToBundle, {});
 }
 
-auto CommonCLI::create(
-        const runtime::ContainerID &id,
-        const std::filesystem::path &pathToBundle,
-        const std::vector<std::unique_ptr<const runtime::CreateOption>>
-                &opts) noexcept -> tl::expected<void, std::exception_ptr>
+auto CommonCLI::create(const runtime::ContainerID &id,
+                       const std::filesystem::path &pathToBundle,
+                       const runtime::CreateOption &option) noexcept
+        -> tl::expected<void, std::exception_ptr>
 try {
         std::vector<std::string> arguments;
         arguments.push_back(id);
         arguments.emplace_back("-b");
         arguments.push_back(pathToBundle);
 
-        doCommand<void>(this->bin(), this->logger(), "create", opts,
+        doCommand<void>(this->bin(), this->logger(),
+                        this->generateGlobalOptions(option), "create",
+                        this->generateSubcommandOptions(option),
                         std::move(arguments));
         return {};
 } catch (...) {
@@ -167,12 +151,13 @@ auto CommonCLI::start(const runtime::ContainerID &id) noexcept
         return this->start(id, {});
 }
 
-auto CommonCLI::start(
-        const runtime::ContainerID &id,
-        const std::vector<std::unique_ptr<const runtime::StartOption>>
-                &opts) noexcept -> tl::expected<void, std::exception_ptr>
+auto CommonCLI::start(const runtime::ContainerID &id,
+                      const runtime::StartOption &option) noexcept
+        -> tl::expected<void, std::exception_ptr>
 try {
-        doCommand<void>(this->bin(), this->logger(), "start", opts, { id });
+        doCommand<void>(this->bin(), this->logger(),
+                        this->generateGlobalOptions(option), "start",
+                        this->generateSubcommandOptions(option), { id });
         return {};
 } catch (...) {
         return tl::unexpected(std::current_exception());
@@ -185,16 +170,18 @@ auto CommonCLI::kill(const runtime::ContainerID &id,
         return this->kill(id, signal, {});
 }
 
-auto CommonCLI::kill(
-        const runtime::ContainerID &id, const runtime::Signal &signal,
-        const std::vector<std::unique_ptr<const runtime::KillOption>>
-                &opts) noexcept -> tl::expected<void, std::exception_ptr>
+auto CommonCLI::kill(const runtime::ContainerID &id,
+                     const runtime::Signal &signal,
+                     const runtime::KillOption &option) noexcept
+        -> tl::expected<void, std::exception_ptr>
 try {
         std::vector<std::string> arguments;
         arguments.push_back(id);
         arguments.push_back(signal);
 
-        doCommand<void>(this->bin(), this->logger(), "kill", opts,
+        doCommand<void>(this->bin(), this->logger(),
+                        this->generateGlobalOptions(option), "kill",
+                        this->generateSubcommandOptions(option),
                         std::move(arguments));
         return {};
 
@@ -208,12 +195,13 @@ auto CommonCLI::delete_(const runtime::ContainerID &id) noexcept
         return this->delete_(id, {});
 }
 
-auto CommonCLI::delete_(
-        const runtime::ContainerID &id,
-        const std::vector<std::unique_ptr<const runtime::DeleteOption>>
-                &opts) noexcept -> tl::expected<void, std::exception_ptr>
+auto CommonCLI::delete_(const runtime::ContainerID &id,
+                        const runtime::DeleteOption &option) noexcept
+        -> tl::expected<void, std::exception_ptr>
 try {
-        doCommand<void>(this->bin(), this->logger(), "delete", opts, { id });
+        doCommand<void>(this->bin(), this->logger(),
+                        this->generateGlobalOptions(option), "delete",
+                        this->generateSubcommandOptions(option), { id });
         return {};
 } catch (...) {
         return tl::unexpected(std::current_exception());
@@ -227,18 +215,20 @@ auto CommonCLI::exec(const runtime::ContainerID &id,
         return this->exec(id, executable, command, {});
 }
 
-auto CommonCLI::exec(
-        const runtime::ContainerID &id, const std::string &executable,
-        const std::vector<std::string> &command,
-        const std::vector<std::unique_ptr<const runtime::ExecOption>>
-                &opts) noexcept -> tl::expected<void, std::exception_ptr>
+auto CommonCLI::exec(const runtime::ContainerID &id,
+                     const std::string &executable,
+                     const std::vector<std::string> &command,
+                     const runtime::ExecOption &option) noexcept
+        -> tl::expected<void, std::exception_ptr>
 try {
         std::vector<std::string> arguments;
         arguments.push_back(id);
         arguments.push_back(executable);
         arguments.insert(arguments.end(), command.begin(), command.end());
 
-        doCommand<void>(this->bin(), this->logger(), "exec", opts,
+        doCommand<void>(this->bin(), this->logger(),
+                        this->generateGlobalOptions(option), "exec",
+                        this->generateSubcommandOptions(option),
                         std::move(arguments));
         return {};
 } catch (...) {
@@ -249,24 +239,77 @@ auto CommonCLI::list() noexcept
         -> tl::expected<std::vector<types::ContainerListItem>,
                         std::exception_ptr>
 {
-        auto format = std::make_unique<runtime::OutputFormatOption>(
-                runtime::OutputFormatOption::Format::Json);
-        std::vector<std::unique_ptr<const runtime::ListOption>> opt;
-        opt.push_back(std::move(format));
-
-        return this->list(opt);
+        return this->list({});
 }
 
-auto CommonCLI::list(
-        const std::vector<std::unique_ptr<const runtime::ListOption>>
-                &opts) noexcept
+auto CommonCLI::list(const runtime::ListOption &option) noexcept
         -> tl::expected<std::vector<types::ContainerListItem>,
                         std::exception_ptr>
 try {
+        runtime::ListOption new_option = option;
+        new_option.format = runtime::ListOption::OutputFormat::Json;
+
         return doCommand<std::vector<types::ContainerListItem>>(
-                this->bin(), this->logger(), "list", opts, {});
+                this->bin(), this->logger(),
+                this->generateGlobalOptions(option), "list",
+                this->generateSubcommandOptions(option), {});
 } catch (...) {
         return tl::unexpected(std::current_exception());
+}
+
+auto CommonCLI::generateGlobalOptions(const runtime::GlobalOption &option)
+        const noexcept -> std::vector<std::string>
+{
+        return option.extra;
+}
+
+auto CommonCLI::generateSubcommandOptions(const runtime::CreateOption &option)
+        const noexcept -> std::vector<std::string>
+{
+        return option.extra;
+}
+
+auto CommonCLI::generateSubcommandOptions(const runtime::DeleteOption &option)
+        const noexcept -> std::vector<std::string>
+{
+        return option.extra;
+}
+
+auto CommonCLI::generateSubcommandOptions(const runtime::ExecOption &option)
+        const noexcept -> std::vector<std::string>
+{
+        return option.extra;
+}
+
+auto CommonCLI::generateSubcommandOptions(const runtime::KillOption &option)
+        const noexcept -> std::vector<std::string>
+{
+        return option.extra;
+}
+
+auto CommonCLI::generateSubcommandOptions(const runtime::ListOption &option)
+        const noexcept -> std::vector<std::string>
+{
+        std::vector<std::string> ret = option.extra;
+
+        if (option.format == runtime::ListOption::OutputFormat::Json) {
+                ret.emplace_back("-f");
+                ret.emplace_back("json");
+        }
+
+        return ret;
+}
+
+auto CommonCLI::generateSubcommandOptions(const runtime::StartOption &option)
+        const noexcept -> std::vector<std::string>
+{
+        return option.extra;
+}
+
+auto CommonCLI::generateSubcommandOptions(const runtime::StateOption &option)
+        const noexcept -> std::vector<std::string>
+{
+        return option.extra;
 }
 
 }

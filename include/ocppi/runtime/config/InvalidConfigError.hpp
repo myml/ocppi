@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "ocppi/InvalidArgumentError.hpp"
 
 namespace ocppi::runtime::config

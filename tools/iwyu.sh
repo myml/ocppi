@@ -44,7 +44,7 @@ IWYU_FIX_INCLUDES=${IWYU_FIX_INCLUDES:=$({
 "$IWYU_FIX_INCLUDES" \
 	--ignore_re \
 	'(\.cache|build|src\/ocppi\/runtime\/(config|features|state)\/types)\/*' \
-	--update_comments \
+	--nocomments \
 	--nosafe_headers \
 	<build/iwyu.out
 

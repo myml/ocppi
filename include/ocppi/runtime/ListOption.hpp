@@ -1,12 +1,15 @@
 #pragma once
 
-#include "ocppi/runtime/Option.hpp"
+#include "ocppi/runtime/GlobalOption.hpp"
 
 namespace ocppi::runtime
 {
 
-class ListOption : public virtual Option {
-        using Option::Option;
+struct ListOption : public GlobalOption {
+        enum class OutputFormat { Json, Text };
+
+        OutputFormat format;
+        std::vector<std::string> extra;
 };
 
 }

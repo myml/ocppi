@@ -1,19 +1,19 @@
 #include "ocppi/runtime/config/ConfigLoader.hpp"
 
-#include <map>    // for operator==
-#include <string> // for basic_s...
+#include <map>
+#include <string>
 
-#include <nlohmann/detail/iterators/iter_impl.hpp> // for iter_impl
+#include <nlohmann/detail/iterators/iter_impl.hpp>
 
-#include "nlohmann/json.hpp"                                 // for basic_json
-#include "nlohmann/json_fwd.hpp"                             // for json
-#include "ocppi/runtime/config/IncompatibleVersionError.hpp" // for Incompa...
-#include "ocppi/runtime/config/KeyMissingError.hpp"          // for KeyMiss...
-#include "ocppi/runtime/config/WrongTypeError.hpp"           // for WrongTy...
-#include "ocppi/runtime/config/types/Config.hpp"             // for Config
+#include "nlohmann/json.hpp"
+#include "nlohmann/json_fwd.hpp"
+#include "ocppi/runtime/config/IncompatibleVersionError.hpp"
+#include "ocppi/runtime/config/KeyMissingError.hpp"
+#include "ocppi/runtime/config/WrongTypeError.hpp"
+#include "ocppi/runtime/config/types/Config.hpp"
 #include "ocppi/runtime/config/types/Generators.hpp" // IWYU pragma: keep
-#include "ocppi/runtime/semver_range.hpp"            // for support...
-#include "semver.hpp"                                // for operator<
+#include "ocppi/runtime/semver_range.hpp"
+#include "semver.hpp"
 
 namespace ocppi::runtime::config
 {

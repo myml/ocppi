@@ -1,14 +1,14 @@
 #pragma once
 
-#include <exception>  // for exception_ptr
-#include <filesystem> // for path
-#include <memory>     // for unique_ptr, shared_ptr
-#include <string>     // for string
-#include <vector>     // for vector
+#include <exception>
+#include <filesystem>
+#include <memory>
+#include <string>
+#include <vector>
 
-#include "ocppi/cli/CLI.hpp"             // for CLI
-#include "ocppi/runtime/ContainerID.hpp" // for ContainerID
-#include "tl/expected.hpp"               // for expected
+#include "ocppi/cli/CLI.hpp"
+#include "ocppi/runtime/ContainerID.hpp"
+#include "tl/expected.hpp"
 
 namespace ocppi
 {
@@ -19,14 +19,16 @@ struct ContainerListItem;
 
 namespace runtime
 {
-class CreateOption;
-class DeleteOption;
-class ExecOption;
-class KillOption;
-class ListOption;
+struct CreateOption;
+struct DeleteOption;
+struct ExecOption;
+struct KillOption;
+struct ListOption;
 class Signal;
-class StartOption;
-class StateOption;
+struct StartOption;
+struct StateOption;
+struct GlobalOption;
+
 namespace state
 {
 namespace types
@@ -45,13 +47,46 @@ class logger;
 namespace ocppi::cli
 {
 
-class CommonCLI : public CLI {
+class CommonCLI : public virtual CLI {
     protected:
+        CommonCLI(std::filesystem::path,
+                  const std::unique_ptr<spdlog::logger> &);
+
         [[nodiscard]]
         auto logger() const -> const std::unique_ptr<spdlog::logger> &;
 
-        CommonCLI(std::filesystem::path,
-                  const std::unique_ptr<spdlog::logger> &);
+        [[nodiscard]]
+        virtual auto generateGlobalOptions(const runtime::GlobalOption &option)
+                const noexcept -> std::vector<std::string>;
+
+        [[nodiscard]]
+        virtual auto generateSubcommandOptions(
+                const runtime::CreateOption &option) const noexcept
+                -> std::vector<std::string>;
+        [[nodiscard]]
+        virtual auto generateSubcommandOptions(
+                const runtime::DeleteOption &option) const noexcept
+                -> std::vector<std::string>;
+        [[nodiscard]]
+        virtual auto generateSubcommandOptions(
+                const runtime::ExecOption &option) const noexcept
+                -> std::vector<std::string>;
+        [[nodiscard]]
+        virtual auto generateSubcommandOptions(
+                const runtime::KillOption &option) const noexcept
+                -> std::vector<std::string>;
+        [[nodiscard]]
+        virtual auto generateSubcommandOptions(
+                const runtime::ListOption &option) const noexcept
+                -> std::vector<std::string>;
+        [[nodiscard]]
+        virtual auto generateSubcommandOptions(
+                const runtime::StartOption &option) const noexcept
+                -> std::vector<std::string>;
+        [[nodiscard]]
+        virtual auto generateSubcommandOptions(
+                const runtime::StateOption &option) const noexcept
+                -> std::vector<std::string>;
 
     public:
         CommonCLI(const CommonCLI &) = delete;
@@ -68,10 +103,8 @@ class CommonCLI : public CLI {
                 -> tl::expected<runtime::state::types::State,
                                 std::exception_ptr> override;
         [[nodiscard]]
-        auto
-        state(const runtime::ContainerID &id,
-              const std::vector<std::unique_ptr<const runtime::StateOption>>
-                      &opts) const noexcept
+        auto state(const runtime::ContainerID &id,
+                   const runtime::StateOption &option) const noexcept
                 -> tl::expected<runtime::state::types::State,
                                 std::exception_ptr> override;
 
@@ -80,21 +113,17 @@ class CommonCLI : public CLI {
                     const std::filesystem::path &pathToBundle) noexcept
                 -> tl::expected<void, std::exception_ptr> override;
         [[nodiscard]]
-        auto
-        create(const runtime::ContainerID &id,
-               const std::filesystem::path &pathToBundle,
-               const std::vector<std::unique_ptr<const runtime::CreateOption>>
-                       &opts) noexcept
+        auto create(const runtime::ContainerID &id,
+                    const std::filesystem::path &pathToBundle,
+                    const runtime::CreateOption &option) noexcept
                 -> tl::expected<void, std::exception_ptr> override;
 
         [[nodiscard]]
         auto start(const runtime::ContainerID &id) noexcept
                 -> tl::expected<void, std::exception_ptr> override;
         [[nodiscard]]
-        auto
-        start(const runtime::ContainerID &id,
-              const std::vector<std::unique_ptr<const runtime::StartOption>>
-                      &opts) noexcept
+        auto start(const runtime::ContainerID &id,
+                   const runtime::StartOption &option) noexcept
                 -> tl::expected<void, std::exception_ptr> override;
 
         [[nodiscard]]
@@ -103,18 +132,15 @@ class CommonCLI : public CLI {
                 -> tl::expected<void, std::exception_ptr> override;
         [[nodiscard]]
         auto kill(const runtime::ContainerID &id, const runtime::Signal &signal,
-                  const std::vector<std::unique_ptr<const runtime::KillOption>>
-                          &opts) noexcept
+                  const runtime::KillOption &option) noexcept
                 -> tl::expected<void, std::exception_ptr> override;
 
         [[nodiscard]]
         auto delete_(const runtime::ContainerID &id) noexcept
                 -> tl::expected<void, std::exception_ptr> override;
         [[nodiscard]]
-        auto
-        delete_(const runtime::ContainerID &id,
-                const std::vector<std::unique_ptr<const runtime::DeleteOption>>
-                        &opts) noexcept
+        auto delete_(const runtime::ContainerID &id,
+                     const runtime::DeleteOption &option) noexcept
                 -> tl::expected<void, std::exception_ptr> override;
 
         [[nodiscard]]
@@ -124,8 +150,7 @@ class CommonCLI : public CLI {
         [[nodiscard]]
         auto exec(const runtime::ContainerID &id, const std::string &executable,
                   const std::vector<std::string> &command,
-                  const std::vector<std::unique_ptr<const runtime::ExecOption>>
-                          &opts) noexcept
+                  const runtime::ExecOption &option) noexcept
                 -> tl::expected<void, std::exception_ptr> override;
 
         [[nodiscard]]
@@ -133,8 +158,7 @@ class CommonCLI : public CLI {
                 -> tl::expected<std::vector<types::ContainerListItem>,
                                 std::exception_ptr> override;
         [[nodiscard]]
-        auto list(const std::vector<std::unique_ptr<const runtime::ListOption>>
-                          &opts) noexcept
+        auto list(const runtime::ListOption &option) noexcept
                 -> tl::expected<std::vector<types::ContainerListItem>,
                                 std::exception_ptr> override;
 

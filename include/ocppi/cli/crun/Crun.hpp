@@ -1,11 +1,11 @@
 #pragma once
 
-#include <exception>  // for exception_ptr
-#include <filesystem> // for path
-#include <memory>     // for make_shared, shared_ptr, unique_ptr
+#include <exception>
+#include <filesystem>
+#include <memory>
 
-#include "ocppi/cli/CommonCLI.hpp" // for CommonCLI
-#include "tl/expected.hpp"         // for expected
+#include "ocppi/cli/CommonCLI.hpp"
+#include "tl/expected.hpp"
 
 namespace spdlog
 {

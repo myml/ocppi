@@ -1,12 +1,12 @@
 #pragma once
 
-#include "ocppi/runtime/Option.hpp"
+#include "ocppi/runtime/GlobalOption.hpp"
 
 namespace ocppi::runtime
 {
 
-class ExecOption : public virtual Option {
-        using Option::Option;
+struct ExecOption : public GlobalOption {
+        std::vector<std::string> extra;
 };
 
 }
