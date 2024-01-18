@@ -5,6 +5,7 @@
 #include <istream>
 #include <iterator>
 #include <map>
+#include <optional>
 #include <string>
 #include <system_error>
 #include <utility>
@@ -275,7 +276,12 @@ try {
 auto CommonCLI::generateGlobalOptions(const runtime::GlobalOption &option)
         const noexcept -> std::vector<std::string>
 {
-        return option.extra;
+        auto ret = option.extra;
+        if (option.root) {
+                ret.emplace_back("--root");
+                ret.push_back(option.root->string());
+        }
+        return ret;
 }
 
 auto CommonCLI::generateSubcommandOptions(const runtime::CreateOption &option)
