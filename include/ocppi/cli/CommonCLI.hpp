@@ -28,6 +28,7 @@ class Signal;
 struct StartOption;
 struct StateOption;
 struct GlobalOption;
+struct RunOption;
 
 namespace state
 {
@@ -87,6 +88,9 @@ class CommonCLI : public virtual CLI {
         virtual auto generateSubcommandOptions(
                 const runtime::StateOption &option) const noexcept
                 -> std::vector<std::string>;
+        [[nodiscard]]
+        virtual auto generateSubcommandOptions(const runtime::RunOption &option)
+                const noexcept -> std::vector<std::string>;
 
     public:
         CommonCLI(const CommonCLI &) = delete;
@@ -161,6 +165,16 @@ class CommonCLI : public virtual CLI {
         auto list(const runtime::ListOption &option) noexcept
                 -> tl::expected<std::vector<types::ContainerListItem>,
                                 std::exception_ptr> override;
+
+        [[nodiscard]]
+        auto run(const runtime::ContainerID &id,
+                 const std::filesystem::path &pathToBundle) noexcept
+                -> tl::expected<void, std::exception_ptr> override;
+        [[nodiscard]]
+        auto run(const runtime::ContainerID &id,
+                 const std::filesystem::path &pathToBundle,
+                 const runtime::RunOption &option) noexcept
+                -> tl::expected<void, std::exception_ptr> override;
 
     private:
         std::filesystem::path bin_;

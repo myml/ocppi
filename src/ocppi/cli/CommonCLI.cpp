@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cerrno>
+#include <istream>
 #include <iterator>
 #include <map>
 #include <string>
@@ -24,6 +25,7 @@
 #include "ocppi/runtime/GlobalOption.hpp"
 #include "ocppi/runtime/KillOption.hpp"
 #include "ocppi/runtime/ListOption.hpp"
+#include "ocppi/runtime/RunOption.hpp"
 #include "ocppi/runtime/Signal.hpp"
 #include "ocppi/runtime/StartOption.hpp"
 #include "ocppi/runtime/StateOption.hpp"
@@ -131,15 +133,10 @@ auto CommonCLI::create(const runtime::ContainerID &id,
                        const runtime::CreateOption &option) noexcept
         -> tl::expected<void, std::exception_ptr>
 try {
-        std::vector<std::string> arguments;
-        arguments.push_back(id);
-        arguments.emplace_back("-b");
-        arguments.push_back(pathToBundle);
-
         doCommand<void>(this->bin(), this->logger(),
                         this->generateGlobalOptions(option), "create",
                         this->generateSubcommandOptions(option),
-                        std::move(arguments));
+                        { id, "-b", pathToBundle });
         return {};
 } catch (...) {
         return tl::unexpected(std::current_exception());
@@ -175,14 +172,10 @@ auto CommonCLI::kill(const runtime::ContainerID &id,
                      const runtime::KillOption &option) noexcept
         -> tl::expected<void, std::exception_ptr>
 try {
-        std::vector<std::string> arguments;
-        arguments.push_back(id);
-        arguments.push_back(signal);
-
         doCommand<void>(this->bin(), this->logger(),
                         this->generateGlobalOptions(option), "kill",
                         this->generateSubcommandOptions(option),
-                        std::move(arguments));
+                        { id, signal });
         return {};
 
 } catch (...) {
@@ -257,6 +250,28 @@ try {
         return tl::unexpected(std::current_exception());
 }
 
+auto CommonCLI::run(const runtime::ContainerID &id,
+                    const std::filesystem::path &pathToBundle) noexcept
+        -> tl::expected<void, std::exception_ptr>
+{
+        return this->run(id, pathToBundle, {});
+}
+
+[[nodiscard]]
+auto CommonCLI::run(const runtime::ContainerID &id,
+                    const std::filesystem::path &pathToBundle,
+                    const runtime::RunOption &option) noexcept
+        -> tl::expected<void, std::exception_ptr>
+try {
+        doCommand<void>(this->bin(), this->logger(),
+                        this->generateGlobalOptions(option), "run",
+                        this->generateSubcommandOptions(option),
+                        { id, pathToBundle.string() });
+        return {};
+} catch (...) {
+        return tl::unexpected(std::current_exception());
+}
+
 auto CommonCLI::generateGlobalOptions(const runtime::GlobalOption &option)
         const noexcept -> std::vector<std::string>
 {
@@ -307,6 +322,12 @@ auto CommonCLI::generateSubcommandOptions(const runtime::StartOption &option)
 }
 
 auto CommonCLI::generateSubcommandOptions(const runtime::StateOption &option)
+        const noexcept -> std::vector<std::string>
+{
+        return option.extra;
+}
+
+auto CommonCLI::generateSubcommandOptions(const runtime::RunOption &option)
         const noexcept -> std::vector<std::string>
 {
         return option.extra;

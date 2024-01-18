@@ -138,6 +138,7 @@ pfl_add_library(
   ./src/ocppi/runtime/semver_range.hpp
   ./src/ocppi/runtime/GlobalOption.cpp
   ./src/ocppi/runtime/StateOption.cpp
+  ./src/ocppi/runtime/RunOption.cpp
   HEADERS
   # find -regex '\.\/include\/.*\.hpp'
   ./include/ocppi/cli/crun/Crun.hpp
@@ -248,6 +249,7 @@ pfl_add_library(
   ./include/ocppi/runtime/SpecRuntime.hpp
   ./include/ocppi/runtime/StartOption.hpp
   ./include/ocppi/runtime/StateOption.hpp
+  ./include/ocppi/runtime/RunOption.hpp
   ./include/ocppi/types/ContainerListItem.hpp
   ./include/ocppi/types/Generators.hpp
   ./include/ocppi/types/helper.hpp
