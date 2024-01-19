@@ -54,20 +54,19 @@ auto doCommand(const std::string &bin,
                const std::string &command, std::vector<std::string> &&options,
                std::vector<std::string> &&arguments) -> Result
 {
-        arguments.insert(arguments.begin(), command);
-        arguments.insert(arguments.begin(),
-                         std::make_move_iterator(globalOption.begin()),
-                         std::make_move_iterator(globalOption.end()));
-        arguments.insert(arguments.end(),
-                         std::make_move_iterator(options.begin()),
-                         std::make_move_iterator(options.end()));
+        auto &args = globalOption;
+        args.insert(args.end(), command);
+        args.insert(args.end(), std::make_move_iterator(options.begin()),
+                    std::make_move_iterator(options.end()));
+        args.insert(args.end(), std::make_move_iterator(arguments.begin()),
+                    std::make_move_iterator(arguments.end()));
 
         SPDLOG_LOGGER_DEBUG(logger, R"(Executing "{}" with arguments: {})", bin,
-                            arguments);
+                            args);
 
         if constexpr (std::is_void_v<Result>) {
                 auto ret = boost::process::system(
-                        bin, boost::process::args(std::move(arguments)));
+                        bin, boost::process::args(std::move(args)));
                 if (ret != 0) {
                         throw CommandFailedError(ret, bin);
                 }
@@ -75,7 +74,7 @@ auto doCommand(const std::string &bin,
         } else {
                 boost::process::ipstream out_ips;
                 auto ret = boost::process::system(
-                        bin, boost::process::args(std::move(arguments)),
+                        bin, boost::process::args(std::move(args)),
                         boost::process::std_out > out_ips);
                 if (ret != 0) {
                         throw CommandFailedError(ret, bin);
@@ -139,10 +138,13 @@ auto CommonCLI::create(const runtime::ContainerID &id,
                        const runtime::CreateOption &option) noexcept
         -> tl::expected<void, std::exception_ptr>
 try {
+        auto opt = option;
+        opt.extra.emplace_back("-b");
+        opt.extra.emplace_back(pathToBundle);
+
         doCommand<void>(this->bin(), this->logger(),
-                        this->generateGlobalOptions(option), "create",
-                        this->generateSubcommandOptions(option),
-                        { id, "-b", pathToBundle });
+                        this->generateGlobalOptions(opt), "create",
+                        this->generateSubcommandOptions(opt), { id });
         return {};
 } catch (...) {
         return tl::unexpected(std::current_exception());
@@ -269,10 +271,13 @@ auto CommonCLI::run(const runtime::ContainerID &id,
                     const runtime::RunOption &option) noexcept
         -> tl::expected<void, std::exception_ptr>
 try {
+        auto opt = option;
+        opt.extra.emplace_back("-b");
+        opt.extra.emplace_back(pathToBundle);
+
         doCommand<void>(this->bin(), this->logger(),
-                        this->generateGlobalOptions(option), "run",
-                        this->generateSubcommandOptions(option),
-                        { id, pathToBundle.string() });
+                        this->generateGlobalOptions(opt), "run",
+                        this->generateSubcommandOptions(opt), { id });
         return {};
 } catch (...) {
         return tl::unexpected(std::current_exception());
