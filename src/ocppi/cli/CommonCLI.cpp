@@ -18,7 +18,6 @@
 #include "nlohmann/json.hpp"
 #include "nlohmann/json_fwd.hpp"
 #include "ocppi/cli/CommandFailedError.hpp"
-#include "ocppi/cli/format.hpp" // IWYU pragma: keep
 #include "ocppi/runtime/ContainerID.hpp"
 #include "ocppi/runtime/CreateOption.hpp"
 #include "ocppi/runtime/DeleteOption.hpp"
@@ -34,6 +33,7 @@
 #include "ocppi/runtime/state/types/State.hpp"
 #include "ocppi/types/ContainerListItem.hpp"
 #include "ocppi/types/Generators.hpp" // IWYU pragma: keep
+#include "spdlog/fmt/ranges.h"        // IWYU pragma: keep
 #include "spdlog/spdlog.h"
 
 namespace spdlog

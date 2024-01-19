@@ -116,7 +116,6 @@ pfl_add_library(
   ./src/ocppi/InvalidArgumentError.cpp
   ./src/ocppi/cli/CommandFailedError.cpp
   ./src/ocppi/cli/crun/Crun.cpp
-  ./src/ocppi/cli/format.hpp
   ./src/ocppi/cli/runc/Runc.cpp
   ./src/ocppi/cli/youki/Youki.cpp
   ./src/ocppi/cli/CommonCLI.cpp
