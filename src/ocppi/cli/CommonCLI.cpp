@@ -299,7 +299,25 @@ auto CommonCLI::generateSubcommandOptions(const runtime::DeleteOption &option)
 auto CommonCLI::generateSubcommandOptions(const runtime::ExecOption &option)
         const noexcept -> std::vector<std::string>
 {
-        return option.extra;
+        std::vector<std::string> ret = option.extra;
+        if (option.tty) {
+                ret.emplace_back("--tty");
+        }
+        if (option.cwd) {
+                ret.emplace_back("--cwd");
+                ret.push_back(option.cwd->string());
+        }
+        for (const auto &env : option.env) {
+                ret.emplace_back("--env");
+                ret.push_back(env.first + "=" + env.second);
+        }
+        if (option.uid) {
+                ret.emplace_back("--user");
+                ret.push_back(
+                        std::to_string(*option.uid) +
+                        (option.gid ? ":" + std::to_string(*option.gid) : ""));
+        }
+        return ret;
 }
 
 auto CommonCLI::generateSubcommandOptions(const runtime::KillOption &option)
