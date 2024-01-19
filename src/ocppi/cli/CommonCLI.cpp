@@ -65,17 +65,22 @@ auto doCommand(const std::string &bin,
         SPDLOG_LOGGER_DEBUG(logger, R"(Executing "{}" with arguments: {})", bin,
                             arguments);
 
-        boost::process::ipstream out_ips;
-        auto ret = boost::process::system(
-                bin, boost::process::args(std::move(arguments)),
-                boost::process::std_out > out_ips);
-        if (ret != 0) {
-                throw CommandFailedError(ret, bin);
-        }
-
         if constexpr (std::is_void_v<Result>) {
+                auto ret = boost::process::system(
+                        bin, boost::process::args(std::move(arguments)));
+                if (ret != 0) {
+                        throw CommandFailedError(ret, bin);
+                }
                 return;
         } else {
+                boost::process::ipstream out_ips;
+                auto ret = boost::process::system(
+                        bin, boost::process::args(std::move(arguments)),
+                        boost::process::std_out > out_ips);
+                if (ret != 0) {
+                        throw CommandFailedError(ret, bin);
+                }
+
                 auto json_result = nlohmann::json::parse(out_ips);
                 return json_result.get<Result>();
         }
